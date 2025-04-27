@@ -4,7 +4,7 @@ function App() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:9090/tmp")
+    fetch("http://localhost:9090/status")
       .then(response => response.text())
       .then(data => setMessage(data))
       .catch(error => console.error("Error fetching data:", error));

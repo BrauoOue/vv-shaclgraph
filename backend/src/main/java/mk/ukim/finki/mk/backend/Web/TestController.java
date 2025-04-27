@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 public class TestController
 {
 
-    @GetMapping(value = "tmp")
+    @GetMapping(value = "status")
     @ResponseBody
     public String tmp ()
     {
