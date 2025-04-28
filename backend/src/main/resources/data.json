@@ -1,0 +1,27 @@
+{
+  "isValid": "t/f",
+  "namespaces": [
+    {
+      "prefix": "ex",
+      "URL": "http.com"
+    }
+  ],
+  "data": [
+    {
+      "subject": "string",
+      "subjectNsPrefix:": "string",
+      "error": "bool",
+      "errorMsg": "string",
+      "triplets": [
+        {
+          "predicate": "string",
+          "PredicateNsPrefix": "string",
+          "object": "string",
+          "ObjectNsPrefix": "string",
+          "error": "bool",
+          "errorMsg": "string"
+        }
+      ]
+    }
+  ]
+}

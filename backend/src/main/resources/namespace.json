@@ -1,0 +1,27 @@
+{
+  "nsPrefix": "string",
+  "URL": "string",
+  "shapes": [
+    {
+      "name": "string",
+      "label": "string",
+      "comment": "string",
+      "isDefinedBy": "string"
+    }
+  ],
+  "predicates": [
+    {
+      "name": "string",
+      "comment": "string",
+      "domain": {
+        "nsPrefix": "string",
+        "domainType": "String"
+      },
+      "range":{
+        "nsPrefix": "string",
+        "domainType": "String"
+      },
+      "isDefinedBy": "string"
+    }
+  ]
+}

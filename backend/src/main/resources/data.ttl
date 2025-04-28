@@ -1,0 +1,14 @@
+@prefix ex: <http://example.org/ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+ex:Alice a foaf:Person ;
+    foaf:name "Alice" ;
+    foaf:age 30 ;
+    foaf:mbox <mailto:alice@example.org> .
+
+ex:Bob a foaf:Person ;
+    foaf:name "Bob" ;
+    foaf:age "not a number" ;     # <-- This will cause validation error
+    foaf:mbox "bob at email dot com" ;<-- Invalid IRI
+    ex:knows "Andrea".
+

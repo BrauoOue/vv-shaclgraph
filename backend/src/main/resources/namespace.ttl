@@ -1,0 +1,23 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+foaf:Person a owl:Class ;
+    rdfs:label "Person" ;
+    rdfs:comment "A person." ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:name a rdf:Property ;
+    rdfs:label "name" ;
+    rdfs:comment "A name for some thing." ;
+    rdfs:domain foaf:Person ;
+    rdfs:range rdfs:Literal ;
+    rdfs:isDefinedBy foaf: .
+
+foaf:mbox a rdf:Property ;
+    rdfs:label "personal mailbox" ;
+    rdfs:comment "A personal mailbox, identified by an Internet mailbox address." ;
+    rdfs:domain foaf:Person ;
+    rdfs:range rdfs:Resource ;
+    rdfs:isDefinedBy foaf: .

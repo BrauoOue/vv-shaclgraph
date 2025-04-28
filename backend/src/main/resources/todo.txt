@@ -1,0 +1,7 @@
+29/04/25 TODO:
+- create the endpoints:
+    - input turtle for rdf data and shacl, constraints get json for data which is validated with Jena against the shacl and also the shacl itself in json
+    - get all the predefined namespaces with their shapes and predicates
+    - json to turtle (for rdf data and shacl constraints and namespaces)
+
+

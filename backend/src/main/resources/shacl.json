@@ -1,0 +1,55 @@
+{
+  "shapes": [
+    {
+      "name": "string",
+      "targetClass": {
+        "nsPrefix": "string",
+        "name": "string"
+      },
+      "targetNode": {
+        "nsPrefix": "string",
+        "name": "string"
+      },
+      "targetSubjectsOf": {
+        "nsPrefix": "string",
+        "name": "string"
+      },
+      "targetObjectsOf": {
+        "nsPrefix": "string",
+        "name": "string"
+      },
+      "message": "string",
+      "severity": "Violation | Warning | Info",
+      "properties": [
+        {
+          "path": {
+            "nsPrefix": "string",
+            "name": "string"
+          },
+          "datatype": {
+            "nsPrefix": "string",
+            "name": "string"
+          },
+          "nodeKind": "IRI | Literal | BlankNode",
+          "minCount": "integer",
+          "maxCount": "integer",
+          "class": {
+            "nsPrefix": "string",
+            "name": "string"
+          },
+          "pattern": "string",
+          "in": ["list", "of", "values"],
+          "minInclusive": "integer or decimal",
+          "maxInclusive": "integer or decimal",
+          "hasValue": "literal or IRI",
+          "lessThan": {
+            "nsPrefix": "string",
+            "name": "string"
+          },
+          "message": "string",
+          "severity": "Violation | Warning | Info"
+        }
+      ]
+    }
+  ]
+}
