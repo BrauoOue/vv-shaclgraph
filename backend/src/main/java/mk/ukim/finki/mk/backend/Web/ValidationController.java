@@ -1,11 +1,9 @@
 package mk.ukim.finki.mk.backend.Web;
 
-import mk.ukim.finki.mk.backend.Models.DTO.ShaclDTO;
-import mk.ukim.finki.mk.backend.Models.DTO.ShaclValidationDTO;
-import mk.ukim.finki.mk.backend.Models.DTO.ValidationError;
+import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclDTO;
+import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclValidationDTO;
 import mk.ukim.finki.mk.backend.Service.ShaclValidationService;
 import mk.ukim.finki.mk.backend.Service.ShaclValidationServiceViktor;
-import org.apache.jena.shacl.ValidationReport;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
