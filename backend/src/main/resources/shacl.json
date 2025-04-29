@@ -1,5 +1,5 @@
 {
-  "shapes": [
+  "definitions": [
     {
       "name": "string",
       "targetClass": {

@@ -1,0 +1,53 @@
+@prefix ex:   <http://example.org/> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+ex:PersonShape
+    a sh:NodeShape ;
+    sh:targetClass ex:Person ;
+    sh:message     "Person must have a valid profile" ;
+    sh:severity    sh:Violation ;
+
+    sh:property [
+        sh:path       ex:name ;
+        sh:datatype   xsd:string ;
+        sh:minCount   1 ;
+        sh:maxCount   1 ;
+        sh:pattern    "^[A-Z][a-z]+$" ;
+        sh:message    "Name must start with a capital letter." ;
+        sh:severity   sh:Violation ;
+    ] ;
+
+    sh:property [
+        sh:path          ex:age ;
+        sh:datatype      xsd:integer ;
+        sh:minCount      1 ;
+        sh:maxCount      1 ;
+        sh:minInclusive  0 ;
+        sh:maxInclusive  150 ;
+        sh:message       "Age must be between 0 and 150." ;
+        sh:severity      sh:Warning ;
+    ] ;
+
+    sh:property [
+        sh:path      ex:gender ;
+        sh:in        ( "Male" "Female" "Other" ) ;
+        sh:message   "Gender must be one of Male/Female/Other." ;
+        sh:severity  sh:Info ;
+    ] ;
+
+    sh:property [
+        sh:path      ex:id ;
+        sh:nodeKind  sh:IRI ;
+        sh:hasValue  ex:DefaultID ;
+        sh:message   "ID must be DefaultID IRI." ;
+        sh:severity  sh:Violation ;
+    ] ;
+
+    sh:property [
+        sh:path      ex:score ;
+        sh:datatype  xsd:decimal ;
+        sh:lessThan  ex:maxScore ;
+        sh:message   "Score must be less than maxScore." ;
+        sh:severity  sh:Violation ;
+    ] .

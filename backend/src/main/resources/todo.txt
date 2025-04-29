@@ -3,7 +3,7 @@
     - input turtle for rdf data and shacl constraints, get json for data which is validated with Jena against the shacl and also the shacl itself in json
 
          data.json <= data.ttl  - Convert data.ttl to data.json G
-         shacl.json<= shacl.ttl - Convert shacl.ttl to shacl.json V
+         shacl.json <= shacl.ttl - Convert shacl.ttl to shacl.json V
 
          data.json () <= data.json shacl.json - Validate the actual data against the shacl constrains
 
