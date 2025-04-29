@@ -1,24 +1,20 @@
 package mk.ukim.finki.mk.backend.Service;
 
 
-import mk.ukim.finki.mk.backend.Models.DTO.ShaclDTO;
-import org.apache.jena.atlas.lib.InternalErrorException;
+import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclDTO;
 import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.shacl.Shapes;
 import org.apache.jena.shacl.engine.ShaclPaths;
 import org.apache.jena.shacl.engine.Target;
-import org.apache.jena.shacl.engine.TargetOps;
 import org.apache.jena.shacl.engine.TargetType;
 import org.apache.jena.shacl.parser.*;
-import org.apache.jena.shacl.parser.ConstraintVisitor;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 

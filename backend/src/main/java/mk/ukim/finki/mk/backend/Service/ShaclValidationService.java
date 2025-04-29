@@ -1,6 +1,6 @@
 package mk.ukim.finki.mk.backend.Service;
 
-import mk.ukim.finki.mk.backend.Models.DTO.ShaclValidationDTO;
+import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclValidationDTO;
 import mk.ukim.finki.mk.backend.Models.DTO.ValidationError;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -8,7 +8,6 @@ import org.apache.jena.shacl.ShaclValidator;
 import org.apache.jena.shacl.ValidationReport;
 import org.apache.jena.shacl.Shapes;
 import org.apache.jena.riot.RDFDataMgr;
-import org.checkerframework.checker.index.qual.PolyUpperBound;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package mk.ukim.finki.mk.backend.Models.DTO;
+package mk.ukim.finki.mk.backend.Models.DTO.shacl;
 
 import lombok.Getter;
 import lombok.Setter;
