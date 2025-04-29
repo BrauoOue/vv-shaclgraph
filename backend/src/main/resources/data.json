@@ -1,23 +1,23 @@
 {
-  "isValid": "t/f",
+  "valid": "t/f",
   "namespaces": [
     {
       "prefix": "ex",
-      "URL": "http.com"
+      "url": "http.com"
     }
   ],
   "data": [
     {
       "subject": "string",
-      "subjectNsPrefix:": "string",
+      "subjectNsPrefix": "string",
       "error": "bool",
       "errorMsg": "string",
       "triplets": [
         {
           "predicate": "string",
-          "PredicateNsPrefix": "string",
+          "predicateNsPrefix": "string",
           "object": "string",
-          "ObjectNsPrefix": "string",
+          "objectNsPrefix": "string",
           "error": "bool",
           "errorMsg": "string"
         }
