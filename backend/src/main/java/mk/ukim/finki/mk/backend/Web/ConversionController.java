@@ -4,17 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import mk.ukim.finki.mk.backend.Models.DTO.data.RdfDataDto;
 import mk.ukim.finki.mk.backend.Service.GochService;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -40,6 +38,21 @@ public class ConversionController {
             @RequestParam("file") MultipartFile file) {
         RdfDataDto dto = gochService.processRdf(file);
         return ResponseEntity.ok(dto);
+    }
+    @Operation(summary = "Convert RDF data from JSON to Turtle file for download")
+    @PostMapping(value = "/jsonToTurtle", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Resource> convertJsonToTurtle(
+            @RequestBody RdfDataDto rdfData,
+            @RequestParam(value = "filename", defaultValue = "data.ttl") String filename) {
+
+        byte[] turtleData = gochService.convertDtoToTurtleFile(rdfData, filename);
+        ByteArrayResource resource = new ByteArrayResource(turtleData);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.parseMediaType("text/turtle"))
+                .contentLength(turtleData.length)
+                .body(resource);
     }
 
 }
