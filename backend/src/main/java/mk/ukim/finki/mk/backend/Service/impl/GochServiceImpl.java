@@ -8,10 +8,13 @@ import mk.ukim.finki.mk.backend.Service.GochService;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +32,51 @@ public class GochServiceImpl implements GochService {
             throw new RuntimeException("Failed to parse & map RDF", e);
         }
     }
+
+    @Override
+    public byte[] convertDtoToTurtleFile(RdfDataDto rdfData, String filename) {
+        Model model = ModelFactory.createDefaultModel();
+
+        // 1. Add namespace prefixes
+        if (rdfData.getNamespaces() != null) {
+            for (NamespaceDto ns : rdfData.getNamespaces()) {
+                model.setNsPrefix(ns.getPrefix(), ns.getUrl());
+            }
+        }
+
+        // 2. Build RDF triples from DTO
+        if (rdfData.getData() != null) {
+            for (DataEntryDto entry : rdfData.getData()) {
+                String subjectUri = buildPrefixedUri(entry.getSubjectNsPrefix(), entry.getSubject(), model);
+                Resource subject = model.createResource(subjectUri);
+
+                if (entry.getTriplets() != null) {
+                    for (TripletDto triplet : entry.getTriplets()) {
+                        String predicateUri = buildPrefixedUri(triplet.getPredicateNsPrefix(), triplet.getPredicate(), model);
+                        Property predicate = model.createProperty(predicateUri);
+
+                        RDFNode object;
+                        if (triplet.getObjectNsPrefix() != null && !triplet.getObjectNsPrefix().isEmpty()) {
+                            // Resource object (prefixed)
+                            String objectUri = buildPrefixedUri(triplet.getObjectNsPrefix(), triplet.getObject(), model);
+                            object = model.createResource(objectUri);
+                        } else {
+                            // Literal object
+                            object = parseLiteral(triplet.getObject());
+                        }
+
+                        model.add(subject, predicate, object);
+                    }
+                }
+            }
+        }
+
+        // 3. Serialize model as Turtle
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        RDFDataMgr.write(outputStream, model, RDFFormat.TURTLE_PRETTY);
+        return outputStream.toByteArray();
+    }
+
 
     private RdfDataDto convertModelToDto(Model model) {
         RdfDataDto dto = new RdfDataDto();
@@ -103,4 +151,27 @@ public class GochServiceImpl implements GochService {
         }
         return "";
     }
+
+    private String buildPrefixedUri(String prefix, String localName, Model model) {
+        String nsUri = model.getNsPrefixURI(prefix);
+        if (nsUri == null) {
+            throw new IllegalArgumentException("Unknown namespace prefix: " + prefix);
+        }
+        return nsUri + localName;
+    }
+
+    private RDFNode parseLiteral(String value) {
+        // Basic type guessing (extend as needed)
+        if (value.matches("-?\\d+")) {
+            return ResourceFactory.createTypedLiteral(Integer.parseInt(value));
+        }
+        if (value.matches("-?\\d+\\.\\d+")) {
+            return ResourceFactory.createTypedLiteral(Double.parseDouble(value));
+        }
+        if (value.startsWith("mailto:")) {
+            return ResourceFactory.createResource(value); // IRI, not literal
+        }
+        return ResourceFactory.createPlainLiteral(value);
+    }
+
 }
