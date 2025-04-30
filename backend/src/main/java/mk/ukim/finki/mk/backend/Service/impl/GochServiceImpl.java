@@ -35,49 +35,36 @@ public class GochServiceImpl implements GochService {
         }
     }
 
-    public String convertDtoToTurtleFile(RdfDataDto rdfData) {
+    @Override
+    public byte[] convertDtoToTurtleFile(RdfDataDto rdfData) {
         Model model = ModelFactory.createDefaultModel();
-
-        System.out.printf(rdfData.toString());
-
-//        if(rdfData.getNamespaces()==null){
-//            System.out.printf("NULLLLLL");
-//        }
 
         // Add namespaces to model
         if (rdfData.getNamespaces() != null) {
             for (NamespaceDto ns : rdfData.getNamespaces()) {
                 model.setNsPrefix(ns.getPrefix(), ns.getUrl());
-                System.out.printf(ns.toString());
             }
         }
 
         // Process data entries
         if (rdfData.getData() != null) {
             for (DataEntryDto entry : rdfData.getData()) {
-                // Resolve subject URI - FIXED: proper URI construction
                 String subjectUri = resolveUri(entry.getSubject(), entry.getSubjectNsPrefix(), rdfData.getNamespaces());
                 Resource subject = model.createResource(subjectUri);
 
-                // Process triplets
                 if (entry.getTriplets() != null) {
                     for (TripletDto triplet : entry.getTriplets()) {
-                        // Resolve predicate URI - FIXED: proper URI construction
                         String predicateUri = resolveUri(triplet.getPredicate(), triplet.getPredicateNsPrefix(), rdfData.getNamespaces());
                         Property predicate = model.createProperty(predicateUri);
 
-                        // Handle object
                         RDFNode object;
                         if (triplet.getObjectNsPrefix() != null && !triplet.getObjectNsPrefix().isEmpty()) {
-                            // It's a resource
                             String objectUri = resolveUri(triplet.getObject(), triplet.getObjectNsPrefix(), rdfData.getNamespaces());
                             object = model.createResource(objectUri);
                         } else {
-                            // It's a literal or an IRI that doesn't use namespaces
                             object = createRdfNode(model, triplet.getObject());
                         }
 
-                        // Special handling for rdf:type
                         if (predicateUri.equals(RDF.type.getURI())) {
                             model.add(subject, RDF.type, object);
                         } else {
@@ -88,11 +75,12 @@ public class GochServiceImpl implements GochService {
             }
         }
 
-        // Serialize to Turtle as String
-        StringWriter writer = new StringWriter();
-        model.write(writer, "TURTLE");
-        return writer.toString();
+        // Serialize to Turtle format (byte array)
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        RDFDataMgr.write(outputStream, model, RDFFormat.TURTLE);
+        return outputStream.toByteArray();
     }
+
 
     /**
      * Resolves a URI using namespace and local name
