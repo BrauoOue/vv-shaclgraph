@@ -1,14 +1,22 @@
 package mk.ukim.finki.mk.backend.Models.DTO.shacl;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 import java.util.List;
+import java.util.Map;
+
+
+
+
 
 @Getter
 @Setter
 public class ShaclDTO
 {
+    @JsonProperty("namespaces")
+    private List<RdfNamespace> prefixToNsMap;
     // List of SHACL shape definitions (each defines constraints for a target)
     private List<Shape> shapeConstrains;
 
