@@ -1,5 +1,11 @@
 {
-  "definitions": [
+  "namespaces": [
+    {
+      "prefix": "ex",
+      "url": "http.com"
+    }
+  ],
+  "shapeConstrains": [
     {
       "name": "string",
       "targetClass": {
