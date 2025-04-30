@@ -2,6 +2,7 @@ package mk.ukim.finki.mk.backend.Web;
 
 import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclDTO;
 import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclValidationDTO;
+import mk.ukim.finki.mk.backend.Service.ConversionService;
 import mk.ukim.finki.mk.backend.Service.impl.ShaclValidationServiceImpl;
 import mk.ukim.finki.mk.backend.Service.impl.ShaclServiceImpl;
 import org.springframework.http.MediaType;
@@ -16,18 +17,21 @@ public class ValidationController {
     private final ShaclValidationServiceImpl validationService;
 
     private final ShaclServiceImpl shaclValidationServiceViktor;
+    private final ConversionService conversionService;
 
-    public ValidationController(ShaclValidationServiceImpl validationService, ShaclServiceImpl shaclValidationServiceViktor)
+    public ValidationController(ShaclValidationServiceImpl validationService, ShaclServiceImpl shaclValidationServiceViktor, ConversionService conversionService)
     {
 
         this.validationService = validationService;
         this.shaclValidationServiceViktor = shaclValidationServiceViktor;
+        this.conversionService = conversionService;
     }
 
 
     @GetMapping()
     public ResponseEntity<ShaclValidationDTO> validate() {
-        ShaclValidationDTO result = this.validationService.validateRdfAgainstShacl("data.ttl", "shapes.ttl");
+        ShaclValidationDTO result = this.validationService.validateRdfAgainstShacl("ttlExamples/data-incorrect.ttl", "ttlExamples/shapes.ttl");
+
         return ResponseEntity.ok(result);
     }
 

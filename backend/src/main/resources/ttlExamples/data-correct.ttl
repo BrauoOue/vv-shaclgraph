@@ -1,0 +1,46 @@
+@prefix ex: <http://example.org/ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# === People ===
+ex:alice a ex:Person ;
+    ex:name "Alice" ;
+    ex:age 29 .
+
+ex:bob a ex:Person ;
+    ex:name "Bob" ;
+    ex:age 42 .
+
+ex:carol a ex:Person ;
+    ex:name "Carol" ;
+    ex:age 35 .
+
+ex:dave a ex:Person ;
+    ex:name "Dave" ;
+    ex:age 51 .
+
+# === Books ===
+ex:book1 a ex:Book ;
+    ex:title "Semantic Web for Beginners" ;
+    ex:author ex:alice .
+
+ex:book2 a ex:Book ;
+    ex:title "Advanced SHACL" ;
+    ex:author ex:bob .
+
+ex:book3 a ex:Book ;
+    ex:title "Knowledge Graphs 101" ;
+    ex:author ex:carol .
+
+ex:book4 a ex:Book ;
+    ex:title "Turtle Language Explained" ;
+    ex:author ex:dave .
+
+# === Libraries ===
+ex:library1 a ex:Library ;
+    ex:books ex:book1, ex:book2 .
+
+ex:library2 a ex:Library ;
+    ex:books ex:book3 .
+
+ex:library3 a ex:Library ;
+    ex:books ex:book4, ex:book1, ex:book3 .
