@@ -35,6 +35,7 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     private RdfDataDto convertModelToDto(Model model) {
+        model.setNsPrefix("rdfs", RDF.getURI());
         RdfDataDto dto = new RdfDataDto();
         dto.setValid(true);                     // always true for now
         dto.setNamespaces(mapPrefixes(model));
@@ -56,15 +57,17 @@ public class ConversionServiceImpl implements ConversionService {
 
         List<DataEntryDto> entries = new ArrayList<>();
         for (var entry : bySubject.entrySet()) {
-            Resource subj = entry.getKey();
-            String subjUri = subj.getURI();
-            String subjPrefix = qnamePrefix(subjUri, model);
+            Resource subj        = entry.getKey();
+            String fullUri       = subj.getURI();
+            String localSubject  = getLocalName(fullUri);
+            String subjPrefix    = qnamePrefix(fullUri, model);
+            if (subjPrefix.isEmpty()) subjPrefix = null;
 
             DataEntryDto de = new DataEntryDto();
-            de.setSubject(subjUri);
+            de.setSubject(localSubject);
             de.setSubjectNsPrefix(subjPrefix);
             de.setError(false);
-            de.setErrorMsg("");
+            de.setErrorMsg(null);              // was ""
             de.setTriplets(mapTriplets(entry.getValue(), model));
             entries.add(de);
         }
@@ -73,19 +76,22 @@ public class ConversionServiceImpl implements ConversionService {
 
     private List<TripletDto> mapTriplets(List<Statement> stmts, Model model) {
         return stmts.stream().map(stmt -> {
-            // predicate: grab full URI, but then reduce to localName
-            String fullPredUri = stmt.getPredicate().getURI();
-            String predLocal = getLocalName(fullPredUri);
-            String predPrefix = qnamePrefix(fullPredUri, model);
+            // predicate
+            String fullPredUri  = stmt.getPredicate().getURI();
+            String predLocal    = getLocalName(fullPredUri);
+            String predPrefix   = qnamePrefix(fullPredUri, model);
+            if (predPrefix.isEmpty()) predPrefix = null;
 
-            // object: either literal (keep as-is) or resource (localName)
+            // object
             RDFNode objNode = stmt.getObject();
             String objVal;
-            String objPrefix = "";
+            String objPrefix = null;
+
             if (objNode.isResource()) {
                 String fullObjUri = objNode.asResource().getURI();
-                objVal = getLocalName(fullObjUri);
+                objVal    = getLocalName(fullObjUri);
                 objPrefix = qnamePrefix(fullObjUri, model);
+                if (objPrefix.isEmpty()) objPrefix = null;
             } else {
                 objVal = objNode.asLiteral().getString();
             }
@@ -96,7 +102,7 @@ public class ConversionServiceImpl implements ConversionService {
             t.setObject(objVal);
             t.setObjectNsPrefix(objPrefix);
             t.setError(false);
-            t.setErrorMsg("");
+            t.setErrorMsg(null);               // was ""
             return t;
         }).collect(Collectors.toList());
     }
