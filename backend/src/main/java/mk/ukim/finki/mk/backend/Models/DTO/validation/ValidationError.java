@@ -1,4 +1,4 @@
-package mk.ukim.finki.mk.backend.Models.DTO;
+package mk.ukim.finki.mk.backend.Models.DTO.validation;
 
 public record ValidationError(
         String node,

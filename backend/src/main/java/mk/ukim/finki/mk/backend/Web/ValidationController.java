@@ -2,7 +2,7 @@ package mk.ukim.finki.mk.backend.Web;
 
 import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclDTO;
 import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclValidationDTO;
-import mk.ukim.finki.mk.backend.Service.ShaclValidationService;
+import mk.ukim.finki.mk.backend.Service.impl.ShaclValidationServiceImpl;
 import mk.ukim.finki.mk.backend.Service.impl.ShaclServiceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/validate")
 public class ValidationController {
 
-    private final ShaclValidationService validationService;
+    private final ShaclValidationServiceImpl validationService;
 
     private final ShaclServiceImpl shaclValidationServiceViktor;
 
-    public ValidationController(ShaclValidationService validationService, ShaclServiceImpl shaclValidationServiceViktor)
+    public ValidationController(ShaclValidationServiceImpl validationService, ShaclServiceImpl shaclValidationServiceViktor)
     {
 
         this.validationService = validationService;
