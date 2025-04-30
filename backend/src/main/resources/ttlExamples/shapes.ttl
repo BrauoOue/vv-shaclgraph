@@ -1,23 +1,40 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ex: <http://example.org/ns#> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-ex:PersonShape a sh:NodeShape ;
-    sh:targetClass foaf:Person ;
-
+ex:PersonShape
+    a sh:NodeShape ;
+    sh:targetClass ex:Person ;
     sh:property [
-        sh:path foaf:name ;
+        sh:path ex:name ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
     ] ;
-
     sh:property [
-        sh:path foaf:age ;
+        sh:path ex:age ;
         sh:datatype xsd:integer ;
-    ] ;
+        sh:minInclusive 0 ;
+    ] .
 
+ex:BookShape
+    a sh:NodeShape ;
+    sh:targetClass ex:Book ;
     sh:property [
-        sh:path foaf:mbox ;
-        sh:nodeKind sh:IRI ;
+        sh:path ex:title ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path ex:author ;
+        sh:class ex:Person ;
+        sh:minCount 1 ;
+    ] .
+
+ex:LibraryShape
+    a sh:NodeShape ;
+    sh:targetClass ex:Library ;
+    sh:property [
+        sh:path ex:books ;
+        sh:class ex:Book ;
+        sh:minCount 1 ;
     ] .

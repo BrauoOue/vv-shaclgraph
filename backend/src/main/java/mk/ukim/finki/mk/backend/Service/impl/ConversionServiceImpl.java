@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ConversionServiceImpl implements ConversionService {
 
     @Override
-    public RdfDataDto processRdf(MultipartFile rdfFile) {
+    public RdfDataDto convertTurtleToRdfDataDto(MultipartFile rdfFile) {
         try (InputStream in = rdfFile.getInputStream()) {
             Model model = ModelFactory.createDefaultModel();
             RDFDataMgr.read(model, in, /* baseURI  */ null, /* lang= */ Lang.TURTLE);

@@ -36,7 +36,7 @@ public class ConversionController {
                     )
             )
             @RequestParam("file") MultipartFile file) {
-        RdfDataDto dto = conversionService.processRdf(file);
+        RdfDataDto dto = conversionService.convertTurtleToRdfDataDto(file);
         return ResponseEntity.ok(dto);
     }
 
@@ -44,7 +44,7 @@ public class ConversionController {
     @PostMapping(value = "/jsonToTurtle", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Resource> convertJsonToTurtle(
             @RequestBody RdfDataDto rdfData,
-            @RequestParam(value = "filename", defaultValue = "data.ttl") String filename) {
+            @RequestParam(value = "filename", defaultValue = "data-correct.ttl") String filename) {
 
         byte[] turtleData = conversionService.convertDtoToTurtleFile(rdfData);
         ByteArrayResource resource = new ByteArrayResource(turtleData);

@@ -41,12 +41,14 @@ public class ShaclValidationServiceImpl implements ShaclValidationService
             // Load SHACL Shapes
             Model shapesModel = ModelFactory.createDefaultModel();
             InputStream shapesStream = getClass().getClassLoader().getResourceAsStream(shapesFilePath);
+            assert shapesStream != null;
             RDFDataMgr.read(shapesModel, shapesStream, null, org.apache.jena.riot.Lang.TURTLE);
             Shapes shapes = Shapes.parse(shapesModel.getGraph());
 
             // Load RDF Data
             Model dataModel = ModelFactory.createDefaultModel();
             InputStream dataStream = getClass().getClassLoader().getResourceAsStream(dataFilePath);
+            assert dataStream != null;
             RDFDataMgr.read(dataModel, dataStream, null, org.apache.jena.riot.Lang.TURTLE);
 
             // Validate
@@ -58,7 +60,6 @@ public class ShaclValidationServiceImpl implements ShaclValidationService
         {
             e.printStackTrace();
             return null;
-//            return "Validation failed: " + e.getMessage();
         }
     }
 }
