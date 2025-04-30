@@ -39,20 +39,30 @@ public class ConversionController {
         RdfDataDto dto = gochService.processRdf(file);
         return ResponseEntity.ok(dto);
     }
-    @Operation(summary = "Convert RDF data from JSON to Turtle file for download")
-    @PostMapping(value = "/jsonToTurtle", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Resource> convertJsonToTurtle(
-            @RequestBody RdfDataDto rdfData,
-            @RequestParam(value = "filename", defaultValue = "data.ttl") String filename) {
+//    @Operation(summary = "Convert RDF data from JSON to Turtle file for download")
+//    @PostMapping(value = "/jsonToTurtle", consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<Resource> convertJsonToTurtle(
+//            @RequestBody RdfDataDto rdfData,
+//            @RequestParam(value = "filename", defaultValue = "data.ttl") String filename) {
+//
+//        byte[] turtleData = gochService.convertDtoToTurtleFile(rdfData, filename);
+//        ByteArrayResource resource = new ByteArrayResource(turtleData);
+//
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+//                .contentType(MediaType.parseMediaType("text/turtle"))
+//                .contentLength(turtleData.length)
+//                .body(resource);
+//    }
+@Operation(summary = "Convert RDF data from JSON to Turtle as String for debugging")
+@PostMapping(value = "/jsonToTurtleString")
+public ResponseEntity<String> convertJsonToTurtleAsString(
+        @RequestBody RdfDataDto rdfData) {
 
-        byte[] turtleData = gochService.convertDtoToTurtleFile(rdfData, filename);
-        ByteArrayResource resource = new ByteArrayResource(turtleData);
+    String turtleContent = gochService.convertDtoToTurtleFile(rdfData);
+    System.out.println("Generated Turtle String: \n" + turtleContent);  // For debugging
+    return ResponseEntity.ok(turtleContent);
+}
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.parseMediaType("text/turtle"))
-                .contentLength(turtleData.length)
-                .body(resource);
-    }
 
 }

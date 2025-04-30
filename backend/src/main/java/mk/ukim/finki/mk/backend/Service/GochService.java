@@ -5,5 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface GochService {
     RdfDataDto processRdf(MultipartFile rdfFile);
-    byte[] convertDtoToTurtleFile(RdfDataDto rdfData, String filename);
+//    byte[] convertDtoToTurtleFile(RdfDataDto rdfData, String filename);
+    String convertDtoToTurtleFile(RdfDataDto rdfData);
+
 }
