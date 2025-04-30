@@ -29,24 +29,6 @@ public class NamespaceServiceImpl implements NamespaceService {
             "http://www.w3.org/2002/07/owl#"
     );
 
-    private Model fetchAllPredefinedVocabularies() {
-        Model combined = ModelFactory.createDefaultModel();
-
-        for (String uri : VOCAB_URIS) {
-            try {
-                String finalUri = resolveRedirects(uri);
-                RDFDataMgr.read(combined, finalUri);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to fetch vocabulary at " + uri, e);
-            }
-        }
-
-        return combined;
-    }
-
-    /**
-     * Recursively follows HTTP redirects (301,302,303,307,308) up to a limit.
-     */
     private String resolveRedirects(String uri) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) new URL(uri).openConnection();
         conn.setInstanceFollowRedirects(false);
@@ -78,19 +60,16 @@ public class NamespaceServiceImpl implements NamespaceService {
     @Override
     public NamespaceDetailDto fetchNamespace(String url) {
         try {
-            // 1) Resolve any redirects, then load just this vocabulary
             String finalUri = resolveRedirects(url);
             Model model = ModelFactory.createDefaultModel();
             RDFDataMgr.read(model, finalUri);
 
-            // 2) Figure out which prefix this model has bound to our base URI
             String prefix = model.getNsPrefixMap().entrySet().stream()
                     .filter(e -> e.getValue().equals(url))
                     .map(Map.Entry::getKey)
                     .findFirst()
                     .orElse("");
 
-            // 3) Delegate to your existing mapper
             return mapOneNamespace(prefix, url, model);
 
         } catch (IOException e) {
@@ -98,28 +77,25 @@ public class NamespaceServiceImpl implements NamespaceService {
         }
     }
 
-    private NamespaceDetailDto mapOneNamespace(
-            String prefix, String baseUri, Model model) {
-
-        // 1) find all classes (shapes) in this namespace
+    private NamespaceDetailDto mapOneNamespace(String prefix, String baseUri, Model model) {
         List<ShapeDto> shapes = model.listResourcesWithProperty(RDF.type, RDFS.Class)
                 .filterKeep(r -> r.getURI().startsWith(baseUri))
                 .mapWith(r -> {
-                    String uri = r.getURI();
+                    // get the raw URI, then turn it into its prefix
+                    String definedByUri = getUri(r, RDFS.isDefinedBy);
+                    String definedByPrefix = uriToPrefix(definedByUri, model);
                     return new ShapeDto(
                             r.getLocalName(),
                             getLiteral(r, RDFS.label),
                             getLiteral(r, RDFS.comment),
-                            getUri(r, RDFS.isDefinedBy)
+                            definedByPrefix
                     );
                 })
                 .toList();
 
-        // 2) find all properties in this namespace
         List<PredicateDto> preds = model.listResourcesWithProperty(RDF.type, RDF.Property)
                 .filterKeep(r -> r.getURI().startsWith(baseUri))
                 .mapWith(r -> {
-                    // domain & range may be absent or multi-valued; we take the first if present
                     Resource domRes = firstResource(r, RDFS.domain);
                     Resource rngRes = firstResource(r, RDFS.range);
 
@@ -130,12 +106,15 @@ public class NamespaceServiceImpl implements NamespaceService {
                             ? new DomainRangeDto(qnamePrefix(rngRes.getURI(), model), rngRes.getLocalName())
                             : null;
 
+                    String definedByUri = getUri(r, RDFS.isDefinedBy);
+                    String definedByPrefix = uriToPrefix(definedByUri, model);
+
                     return new PredicateDto(
                             r.getLocalName(),
                             getLiteral(r, RDFS.comment),
                             domDto,
                             rngDto,
-                            getUri(r, RDFS.isDefinedBy)
+                            definedByPrefix
                     );
                 })
                 .toList();
@@ -171,5 +150,15 @@ public class NamespaceServiceImpl implements NamespaceService {
                 ? qn.substring(0, qn.indexOf(':'))
                 : "";
     }
+
+    private String uriToPrefix(String uri, Model model) {
+        if (uri == null || uri.isEmpty()) return "";
+        return model.getNsPrefixMap().entrySet().stream()
+                .filter(e -> e.getValue().equals(uri))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse("");
+    }
+
 
 }
