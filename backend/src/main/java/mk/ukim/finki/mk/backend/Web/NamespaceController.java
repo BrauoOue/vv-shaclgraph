@@ -28,7 +28,7 @@ public class NamespaceController {
 
     // New endpoint for one namespace by URL:
     // e.g.  GET /api/namespaces/predefined?url=http://xmlns.com/foaf/0.1/
-    @GetMapping(value = "/predefined", params = "url")
+    @GetMapping(value = "/predefined/by", params = "url")
     public ResponseEntity<NamespaceDetailDto> getPredefinedNamespace(
             @RequestParam("url") String url
     ) {

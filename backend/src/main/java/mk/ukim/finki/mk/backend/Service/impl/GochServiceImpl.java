@@ -129,78 +129,6 @@ public class GochServiceImpl implements GochService {
         return model.createLiteral(value);
     }
 
-
-
-//    public byte[] convertDtoToTurtleFile(RdfDataDto rdfData, String filename) {
-//        Model model = ModelFactory.createDefaultModel();
-//
-//        // Add namespaces to model
-//        if (rdfData.getNamespaces() != null) {
-//            for (NamespaceDto ns : rdfData.getNamespaces()) {
-//                model.setNsPrefix(ns.getPrefix(), ns.getUrl());
-//            }
-//        }
-//
-//        // Process data entries
-//        if (rdfData.getData() != null) {
-//            for (DataEntryDto entry : rdfData.getData()) {
-//                // Resolve subject URI
-//                String subjectUri = resolvePrefixedName(
-//                        entry.getSubject(),
-//                        entry.getSubjectNsPrefix(),
-//                        rdfData.getNamespaces()
-//                );
-//                Resource subject = model.createResource(subjectUri);
-//
-//                // Process triplets
-//                if (entry.getTriplets() != null) {
-//                    for (TripletDto triplet : entry.getTriplets()) {
-//
-//                        // Resolve predicate URI
-//                        String predicateUri = resolvePrefixedName(
-//                                triplet.getPredicate(),
-//                                triplet.getPredicateNsPrefix(),
-//                                rdfData.getNamespaces()
-//                        );
-//                        Property predicate = model.createProperty(predicateUri);
-//
-//                        // Handle object
-//                        RDFNode object;
-//                        if (!triplet.getObjectNsPrefix().isEmpty()) {
-//                            String objectUri = resolvePrefixedName(
-//                                    triplet.getObject(),
-//                                    triplet.getObjectNsPrefix(),
-//                                    rdfData.getNamespaces()
-//                            );
-//                            object = model.createResource(objectUri);
-//                        } else {
-//                            // Handle special case for typed literals
-//
-//                                object = model.createLiteral(triplet.getObject());
-//
-//                        }
-//
-//                        // Add triple to model (special handling for rdf:type)
-//                        if (predicateUri.equals(RDF.type.getURI())) {
-//                            model.add(subject, RDF.type, object);
-//                        } else {
-//                            model.add(subject, predicate, object);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        // Serialize to Turtle
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        System.out.println("Writing model to turtle...");
-//        System.out.println("Model size: " + model.size());
-//        RDFDataMgr.write(outputStream, model, RDFFormat.TURTLE);
-//
-//        return outputStream.toByteArray();
-//    }
-
-
     private RdfDataDto convertModelToDto(Model model) {
         RdfDataDto dto = new RdfDataDto();
         dto.setValid(true);                     // always true for now
@@ -240,21 +168,26 @@ public class GochServiceImpl implements GochService {
 
     private List<TripletDto> mapTriplets(List<Statement> stmts, Model model) {
         return stmts.stream().map(stmt -> {
-            String predUri   = stmt.getPredicate().getURI();
-            RDFNode objNode  = stmt.getObject();
+            // predicate: grab full URI, but then reduce to localName
+            String fullPredUri = stmt.getPredicate().getURI();
+            String predLocal    = getLocalName(fullPredUri);
+            String predPrefix   = qnamePrefix(fullPredUri, model);
+
+            // object: either literal (keep as-is) or resource (localName)
+            RDFNode objNode = stmt.getObject();
             String objVal;
             String objPrefix = "";
-
             if (objNode.isResource()) {
-                objVal     = objNode.asResource().getURI();
-                objPrefix  = qnamePrefix(objVal, model);
+                String fullObjUri = objNode.asResource().getURI();
+                objVal     = getLocalName(fullObjUri);
+                objPrefix  = qnamePrefix(fullObjUri, model);
             } else {
                 objVal     = objNode.asLiteral().getString();
             }
 
             TripletDto t = new TripletDto();
-            t.setPredicate(predUri);
-            t.setPredicateNsPrefix(qnamePrefix(predUri, model));
+            t.setPredicate(predLocal);
+            t.setPredicateNsPrefix(predPrefix);
             t.setObject(objVal);
             t.setObjectNsPrefix(objPrefix);
             t.setError(false);
@@ -268,6 +201,9 @@ public class GochServiceImpl implements GochService {
      * Returns "" if none.
      */
     private String qnamePrefix(String uri, Model model) {
+        if (uri == null) {
+            return "";
+        }
         String qn = model.qnameFor(uri);
         if (qn != null && qn.contains(":")) {
             return qn.substring(0, qn.indexOf(':'));
@@ -275,5 +211,12 @@ public class GochServiceImpl implements GochService {
         return "";
     }
 
+    private String getLocalName(String uri) {
+        if (uri == null) return "";
+        int idx = Math.max(uri.lastIndexOf('#'), uri.lastIndexOf('/'));
+        return (idx != -1 && idx + 1 < uri.length())
+                ? uri.substring(idx + 1)
+                : uri;
+    }
 
 }
