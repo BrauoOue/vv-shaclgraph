@@ -38,7 +38,11 @@
             "name": "string"
           },
           "pattern": "string",
-          "in": ["list", "of", "values"],
+          "in": [
+            "list",
+            "of",
+            "values"
+          ],
           "minInclusive": "integer or decimal",
           "maxInclusive": "integer or decimal",
           "hasValue": "literal or IRI",
@@ -47,7 +51,10 @@
             "name": "string"
           },
           "message": "string",
-          "severity": "Violation | Warning | Info"
+          "severity": {
+            "nsPrefix": "string",
+            "name": "Violation | Warning | Info"
+          }
         }
       ]
     }

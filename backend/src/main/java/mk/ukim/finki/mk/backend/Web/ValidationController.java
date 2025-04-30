@@ -3,7 +3,7 @@ package mk.ukim.finki.mk.backend.Web;
 import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclDTO;
 import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclValidationDTO;
 import mk.ukim.finki.mk.backend.Service.ShaclValidationService;
-import mk.ukim.finki.mk.backend.Service.ShaclValidationServiceViktor;
+import mk.ukim.finki.mk.backend.Service.impl.ShaclServiceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +15,11 @@ public class ValidationController {
 
     private final ShaclValidationService validationService;
 
-    private final ShaclValidationServiceViktor shaclValidationServiceViktor;
+    private final ShaclServiceImpl shaclValidationServiceViktor;
 
-    public ValidationController(ShaclValidationService validationService, ShaclValidationServiceViktor shaclValidationServiceViktor) {
+    public ValidationController(ShaclValidationService validationService, ShaclServiceImpl shaclValidationServiceViktor)
+    {
+
         this.validationService = validationService;
         this.shaclValidationServiceViktor = shaclValidationServiceViktor;
     }
