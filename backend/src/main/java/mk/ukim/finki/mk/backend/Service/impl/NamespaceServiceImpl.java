@@ -29,9 +29,6 @@ public class NamespaceServiceImpl implements NamespaceService {
             "http://www.w3.org/2002/07/owl#"
     );
 
-    /**
-     * Recursively follows HTTP redirects (301,302,303,307,308) up to a limit.
-     */
     private String resolveRedirects(String uri) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) new URL(uri).openConnection();
         conn.setInstanceFollowRedirects(false);
@@ -153,6 +150,7 @@ public class NamespaceServiceImpl implements NamespaceService {
                 ? qn.substring(0, qn.indexOf(':'))
                 : "";
     }
+
     private String uriToPrefix(String uri, Model model) {
         if (uri == null || uri.isEmpty()) return "";
         return model.getNsPrefixMap().entrySet().stream()
