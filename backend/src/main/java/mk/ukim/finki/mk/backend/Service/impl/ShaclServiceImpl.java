@@ -1,7 +1,10 @@
-package mk.ukim.finki.mk.backend.Service;
+package mk.ukim.finki.mk.backend.Service.impl;
 
 
+import mk.ukim.finki.mk.backend.Models.DTO.shacl.BHelpers;
+import mk.ukim.finki.mk.backend.Models.DTO.shacl.RdfPair;
 import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclDTO;
+import mk.ukim.finki.mk.backend.Service.ShaclService;
 import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -10,24 +13,27 @@ import org.apache.jena.shacl.engine.ShaclPaths;
 import org.apache.jena.shacl.engine.Target;
 import org.apache.jena.shacl.engine.TargetType;
 import org.apache.jena.shacl.parser.*;
+import org.apache.jena.sparql.expr.NodeValue;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.jena.shacl.engine.constraint.*;
 
 
 @Service
-public class ShaclValidationServiceViktor
+public class ShaclServiceImpl implements ShaclService
 {
-
     public ShaclDTO parseShaclToShaclDTO(String shaclContent)
     {
         Model model = ModelFactory.createDefaultModel();
+
+
         try (ByteArrayInputStream input = new ByteArrayInputStream(shaclContent.getBytes(StandardCharsets.UTF_8)))
         {
             model.read(input, null, "TTL");
@@ -35,6 +41,7 @@ public class ShaclValidationServiceViktor
         {
             throw new RuntimeException("Error reading SHACL content: " + e.getMessage());
         }
+        Map<String, String> nsToPrefixMap = BHelpers.invertMap(model.getNsPrefixMap());
 
         Shapes shapes = Shapes.parse(model);
         ShaclDTO dto = new ShaclDTO();
@@ -43,7 +50,7 @@ public class ShaclValidationServiceViktor
         shapes.forEach(shape ->
         {
             ShaclDTO.Shape dtoShape = new ShaclDTO.Shape();
-            dtoShape.setName(shape.getShapeNode().toString());
+            dtoShape.setName(RdfPair.toPair(shape.getShapeNode().toString(), null).getName());
 
             for (Target target : shape.getTargets())
             {
@@ -53,7 +60,7 @@ public class ShaclValidationServiceViktor
                 if (node == null) continue;
 
                 String uri = node.isURI() ? node.getURI() : node.toString();
-                ShaclDTO.ShaclPair pair = toPair(uri);
+                RdfPair pair = RdfPair.toPair(uri, nsToPrefixMap);
 
                 switch (type)
                 {
@@ -81,29 +88,25 @@ public class ShaclValidationServiceViktor
                 {
                     ShaclDTO.Property dtoProp = new ShaclDTO.Property();
 
-                    // Path (predicate)
                     if (s.getPath() != null)
                     {
                         String pathStr = ShaclPaths.pathToString(s.getPath());
-                        dtoProp.setPath(toPair(pathStr));
+                        dtoProp.setPath(RdfPair.toPair(pathStr, nsToPrefixMap));
                     }
 
-                    // Severity (specific to the property)
                     if (s.getSeverity() != null)
                     {
-                        dtoProp.setSeverity(s.getSeverity().toString());
+                        dtoProp.setSeverity(RdfPair.toPair(s.getSeverity().level().toString(), nsToPrefixMap));
                     }
 
-                    // Messages (only first one taken if multiple)
                     if (!s.getMessages().isEmpty())
                     {
                         dtoProp.setMessage(s.getMessages().iterator().next().getLiteralLexicalForm());
                     }
 
-                    // Constraints (handle manually)
                     for (Constraint constraint : s.getConstraints())
                     {
-                        constraint.visit(new ConstraintVisitor(dtoProp));
+                        constraint.visit(new ConstraintVisitor(dtoProp, nsToPrefixMap));
                     }
 
                     props.add(dtoProp);
@@ -115,81 +118,59 @@ public class ShaclValidationServiceViktor
         });
         dto.setShapeConstrains(shapeList);
 
-
         return dto;
-
-
     }
 
-    private ShaclDTO.ShaclPair toPair(String fullUri)
-    {
-        ShaclDTO.ShaclPair pair = new ShaclDTO.ShaclPair();
-        int idx = Math.max(fullUri.lastIndexOf('#'), fullUri.lastIndexOf('/'));
-        if (idx != -1)
-        {
-            pair.setNsPrefix(fullUri.substring(0, idx + 1));
-            pair.setName(fullUri.substring(idx + 1));
-        }
-        else
-        {
-            pair.setNsPrefix("");
-            pair.setName(fullUri);
-        }
-        return pair;
-    }
-
-    public class ConstraintVisitor extends ConstraintVisitorBase
+    public static class ConstraintVisitor extends ConstraintVisitorBase
     {
         private final ShaclDTO.Property dtoProp;
+        private final Map<String, String> nsToPrefixMap;
 
-        public ConstraintVisitor(ShaclDTO.Property dtoProp)
+        public ConstraintVisitor(ShaclDTO.Property dtoProp, Map<String, String> nsToPrefixMap)
         {
             this.dtoProp = dtoProp;
+            this.nsToPrefixMap = nsToPrefixMap;
         }
 
         @Override
         public void visit(ClassConstraint constraint)
         {
-            // sh:class → expected RDF class
-            Node cls = constraint.getExpectedClass();                            // :contentReference[oaicite:0]{index=0}
+            Node cls = constraint.getExpectedClass();
             String uri = cls.isURI() ? cls.getURI() : cls.toString();
-            dtoProp.setClazz(toPair(uri));
+            dtoProp.setClazz(RdfPair.toPair(uri, nsToPrefixMap));
         }
 
         @Override
         public void visit(NodeKindConstraint constraint)
         {
-            // sh:nodeKind → IRI | Literal | BlankNode
-            dtoProp.setNodeKind(constraint.getKind().getLocalName());           // :contentReference[oaicite:1]{index=1}
+            dtoProp.setNodeKind(constraint.getKind().getLocalName());
         }
 
         @Override
         public void visit(MinCount constraint)
         {
-            // sh:minCount → minimum cardinality
-            dtoProp.setMinCount(constraint.getMinCount());                     // :contentReference[oaicite:2]{index=2}
+            dtoProp.setMinCount(constraint.getMinCount());
         }
 
         @Override
         public void visit(MaxCount constraint)
         {
-            // sh:maxCount → maximum cardinality
-            dtoProp.setMaxCount(constraint.getMaxCount());                     // :contentReference[oaicite:3]{index=3}
+            dtoProp.setMaxCount(constraint.getMaxCount());
         }
 
         @Override
         public void visit(PatternConstraint constraint)
         {
-            // sh:pattern → regex string
-            dtoProp.setPattern(constraint.getPattern());                       // :contentReference[oaicite:4]{index=4}
+            dtoProp.setPattern(constraint.getPattern());
         }
 
         @Override
         public void visit(InConstraint constraint)
         {
-            // sh:in → list of allowed RDF terms
-            List<String> inValues = constraint.getValues().stream()            // :contentReference[oaicite:5]{index=5}
-                    .map(n -> n.isURI() ? n.getURI() : n.toString())
+            List<String> inValues = constraint.getValues().stream()
+                    .map(
+                            n -> n.isURI() ? n.getURI() : n.toString().replace("\"", "")
+                    )
                     .collect(Collectors.toList());
             dtoProp.setInValues(inValues);
         }
@@ -197,7 +178,6 @@ public class ShaclValidationServiceViktor
         @Override
         public void visit(HasValueConstraint constraint)
         {
-            // sh:hasValue → specific required value
             Node v = constraint.getValue();
             String uri = v.isURI() ? v.getURI() : v.toString();
             dtoProp.setHasValue(uri);
@@ -206,32 +186,23 @@ public class ShaclValidationServiceViktor
         @Override
         public void visit(ValueMinInclusiveConstraint constraint)
         {
-            // sh:minInclusive → minimum allowed (numeric)
-            //TODO: Check correctness of this
-            String lex = constraint.getNodeValue().getString();
-//            String lex = constraint.getValue().getLiteralLexicalForm();
+            NodeValue nodeValue = constraint.getNodeValue();
+            String lex = nodeValue.toString();
             dtoProp.setMinInclusive(lex == null ? null : Double.parseDouble(lex));
         }
 
         @Override
         public void visit(ValueMaxInclusiveConstraint constraint)
         {
-            // sh:maxInclusive → maximum allowed (numeric)
-            //TODO: Check correctness of this
-            String lex = constraint.getNodeValue().getString();
-//            String lex = constraint.getValue().getLiteralLexicalForm();
+            String lex = constraint.getNodeValue().toString();
             dtoProp.setMaxInclusive(lex == null ? null : Double.parseDouble(lex));
         }
 
         @Override
         public void visit(LessThanConstraint constraint)
         {
-            //TODO:Implement this later
-            dtoProp.setLessThan(new ShaclDTO.ShaclPair("NOT IMPLEMENTED", "NOT IMPLEMENTED"));
-//            // sh:lessThan → another path whose value must be greater
-//            Path other = constraint.getOtherPath();
-//            String pathStr = ShaclPaths.str(other);
-//            dtoProp.setLessThan(toPair(pathStr));
+            dtoProp.setLessThan(RdfPair.toPair(constraint.getValue().toString(), nsToPrefixMap));
+
         }
     }
 
