@@ -117,21 +117,26 @@ public class GochServiceImpl implements GochService {
 
     private List<TripletDto> mapTriplets(List<Statement> stmts, Model model) {
         return stmts.stream().map(stmt -> {
-            String predUri   = stmt.getPredicate().getURI();
-            RDFNode objNode  = stmt.getObject();
+            // predicate: grab full URI, but then reduce to localName
+            String fullPredUri = stmt.getPredicate().getURI();
+            String predLocal    = getLocalName(fullPredUri);
+            String predPrefix   = qnamePrefix(fullPredUri, model);
+
+            // object: either literal (keep as-is) or resource (localName)
+            RDFNode objNode = stmt.getObject();
             String objVal;
             String objPrefix = "";
-
             if (objNode.isResource()) {
-                objVal     = objNode.asResource().getURI();
-                objPrefix  = qnamePrefix(objVal, model);
+                String fullObjUri = objNode.asResource().getURI();
+                objVal     = getLocalName(fullObjUri);
+                objPrefix  = qnamePrefix(fullObjUri, model);
             } else {
                 objVal     = objNode.asLiteral().getString();
             }
 
             TripletDto t = new TripletDto();
-            t.setPredicate(predUri);
-            t.setPredicateNsPrefix(qnamePrefix(predUri, model));
+            t.setPredicate(predLocal);
+            t.setPredicateNsPrefix(predPrefix);
             t.setObject(objVal);
             t.setObjectNsPrefix(objPrefix);
             t.setError(false);
@@ -175,6 +180,13 @@ public class GochServiceImpl implements GochService {
             return ResourceFactory.createResource(value); // IRI, not literal
         }
         return ResourceFactory.createPlainLiteral(value);
+    }
+    private String getLocalName(String uri) {
+        if (uri == null) return "";
+        int idx = Math.max(uri.lastIndexOf('#'), uri.lastIndexOf('/'));
+        return (idx != -1 && idx + 1 < uri.length())
+                ? uri.substring(idx + 1)
+                : uri;
     }
 
 }
