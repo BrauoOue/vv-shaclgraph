@@ -8,7 +8,9 @@ ex:Alice a foaf:Person ;
 
 ex:Bob a foaf:Person ;
     foaf:name "Bob" ;
-    foaf:age "not a number" ;     # <-- This will cause validation error
-    foaf:mbox "bob at email dot com" ;<-- Invalid IRI
-    ex:knows "Andrea".
+    foaf:age 25 ;  # Assuming valid age
+    foaf:mbox <mailto:bob@example.com> ;
+    ex:knows ex:Andrea .
 
+ex:Andrea a foaf:Person ;
+    foaf:name "Andrea" .

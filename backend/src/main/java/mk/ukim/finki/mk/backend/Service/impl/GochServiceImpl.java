@@ -5,10 +5,12 @@ import mk.ukim.finki.mk.backend.Models.DTO.data.NamespaceDto;
 import mk.ukim.finki.mk.backend.Models.DTO.data.RdfDataDto;
 import mk.ukim.finki.mk.backend.Models.DTO.data.TripletDto;
 import mk.ukim.finki.mk.backend.Service.GochService;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.vocabulary.RDF;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,49 +36,98 @@ public class GochServiceImpl implements GochService {
     }
 
     @Override
-    public byte[] convertDtoToTurtleFile(RdfDataDto rdfData, String filename) {
+    public byte[] convertDtoToTurtleFile(RdfDataDto rdfData) {
         Model model = ModelFactory.createDefaultModel();
 
-        // 1. Add namespace prefixes
+        // Add namespaces to model
         if (rdfData.getNamespaces() != null) {
             for (NamespaceDto ns : rdfData.getNamespaces()) {
                 model.setNsPrefix(ns.getPrefix(), ns.getUrl());
             }
         }
 
-        // 2. Build RDF triples from DTO
+        // Process data entries
         if (rdfData.getData() != null) {
             for (DataEntryDto entry : rdfData.getData()) {
-                String subjectUri = buildPrefixedUri(entry.getSubjectNsPrefix(), entry.getSubject(), model);
+                String subjectUri = resolveUri(entry.getSubject(), entry.getSubjectNsPrefix(), rdfData.getNamespaces());
                 Resource subject = model.createResource(subjectUri);
 
                 if (entry.getTriplets() != null) {
                     for (TripletDto triplet : entry.getTriplets()) {
-                        String predicateUri = buildPrefixedUri(triplet.getPredicateNsPrefix(), triplet.getPredicate(), model);
+                        String predicateUri = resolveUri(triplet.getPredicate(), triplet.getPredicateNsPrefix(), rdfData.getNamespaces());
                         Property predicate = model.createProperty(predicateUri);
 
                         RDFNode object;
                         if (triplet.getObjectNsPrefix() != null && !triplet.getObjectNsPrefix().isEmpty()) {
-                            // Resource object (prefixed)
-                            String objectUri = buildPrefixedUri(triplet.getObjectNsPrefix(), triplet.getObject(), model);
+                            String objectUri = resolveUri(triplet.getObject(), triplet.getObjectNsPrefix(), rdfData.getNamespaces());
                             object = model.createResource(objectUri);
                         } else {
-                            // Literal object
-                            object = parseLiteral(triplet.getObject());
+                            object = createRdfNode(model, triplet.getObject());
                         }
 
-                        model.add(subject, predicate, object);
+                        if (predicateUri.equals(RDF.type.getURI())) {
+                            model.add(subject, RDF.type, object);
+                        } else {
+                            model.add(subject, predicate, object);
+                        }
                     }
                 }
             }
         }
 
-        // 3. Serialize model as Turtle
+        // Serialize to Turtle format (byte array)
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        RDFDataMgr.write(outputStream, model, RDFFormat.TURTLE_PRETTY);
+        RDFDataMgr.write(outputStream, model, RDFFormat.TURTLE);
         return outputStream.toByteArray();
     }
 
+
+    /**
+     * Resolves a URI using namespace and local name
+     */
+    private String resolveUri(String localName, String prefix, List<NamespaceDto> namespaces) {
+        if (prefix == null || prefix.isEmpty()) {
+            return localName;  // No prefix means it's a full URI already
+        }
+
+        // Find the namespace URL for the given prefix
+        Optional<NamespaceDto> namespace = namespaces.stream()
+                .filter(ns -> ns.getPrefix().equals(prefix))
+                .findFirst();
+
+        if (namespace.isPresent()) {
+            return namespace.get().getUrl() + localName;
+        } else {
+            throw new IllegalArgumentException("Undefined namespace prefix: " + prefix);
+        }
+    }
+
+    /**
+     * Creates appropriate RDF node based on value content
+     */
+    private RDFNode createRdfNode(Model model, String value) {
+        // Handle special IRIs like mailto:
+        if (value.startsWith("mailto:") || value.startsWith("http://") || value.startsWith("https://")) {
+            return model.createResource(value);
+        }
+
+        // Handle numeric literals
+        if (value.matches("^-?\\d+$")) {
+            return model.createTypedLiteral(Integer.parseInt(value), XSDDatatype.XSDinteger);
+        }
+
+        if (value.matches("^-?\\d+\\.\\d+$")) {
+            return model.createTypedLiteral(Double.parseDouble(value), XSDDatatype.XSDdecimal);
+        }
+
+        // Handle boolean literals
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+            return model.createTypedLiteral(Boolean.parseBoolean(value), XSDDatatype.XSDboolean);
+        }
+
+        // Default to string literal
+        return model.createLiteral(value);
+    }
 
     private RdfDataDto convertModelToDto(Model model) {
         RdfDataDto dto = new RdfDataDto();
@@ -160,27 +211,6 @@ public class GochServiceImpl implements GochService {
         return "";
     }
 
-    private String buildPrefixedUri(String prefix, String localName, Model model) {
-        String nsUri = model.getNsPrefixURI(prefix);
-        if (nsUri == null) {
-            throw new IllegalArgumentException("Unknown namespace prefix: " + prefix);
-        }
-        return nsUri + localName;
-    }
-
-    private RDFNode parseLiteral(String value) {
-        // Basic type guessing (extend as needed)
-        if (value.matches("-?\\d+")) {
-            return ResourceFactory.createTypedLiteral(Integer.parseInt(value));
-        }
-        if (value.matches("-?\\d+\\.\\d+")) {
-            return ResourceFactory.createTypedLiteral(Double.parseDouble(value));
-        }
-        if (value.startsWith("mailto:")) {
-            return ResourceFactory.createResource(value); // IRI, not literal
-        }
-        return ResourceFactory.createPlainLiteral(value);
-    }
     private String getLocalName(String uri) {
         if (uri == null) return "";
         int idx = Math.max(uri.lastIndexOf('#'), uri.lastIndexOf('/'));
