@@ -145,6 +145,9 @@ public class GochServiceImpl implements GochService {
      * Returns "" if none.
      */
     private String qnamePrefix(String uri, Model model) {
+        if (uri == null) {
+            return "";
+        }
         String qn = model.qnameFor(uri);
         if (qn != null && qn.contains(":")) {
             return qn.substring(0, qn.indexOf(':'));
