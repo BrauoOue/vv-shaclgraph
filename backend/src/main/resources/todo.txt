@@ -2,7 +2,7 @@
 - create the endpoints:
     - input turtle for rdf data and shacl constraints, get json for data which is validated with Jena against the shacl and also the shacl itself in json
 
-         data.json <= data.ttl  - Convert data.ttl to data.json G
+         data.json <= data.ttl  - Convert data.ttl to data.json needs test
          shacl.json <= shacl.ttl - Convert shacl.ttl to shacl.json V
 
          data.json () <= data.json shacl.json - Validate the actual data against the shacl constrains
@@ -10,10 +10,11 @@
 
     - get all the predefined namespaces with their shapes and predicates
 
-         namespace.json <= ()
+         [namespace.json] <= () needs test
+         namespace.json <= (url) needs test
 
 
     - json to turtle (for rdf data and shacl constraints and namespaces)
 
-         data.ttl <= data.json  - Convert data.json to data.ttl
-         shacl.ttl <= shacl.json - Convert shacl.json to shacl.ttl
+         data.ttl <= data.json  - Convert data.json to data.ttl A
+         shacl.ttl <= shacl.json - Convert shacl.json to shacl.ttl V
