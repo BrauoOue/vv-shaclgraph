@@ -26,7 +26,7 @@ public class ConversionController {
 
     @Operation(summary = "Upload an RDF file")
     @PostMapping(value = "/turtleToJson", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<RdfDataDto> upload(
+    public ResponseEntity<RdfDataDto> turtleDataToJson(
             @Parameter(
                     description = "RDF file to upload",
                     required = true,
@@ -42,7 +42,7 @@ public class ConversionController {
 
     @Operation(summary = "Convert RDF data from JSON to Turtle file for download")
     @PostMapping(value = "/jsonToTurtle", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Resource> convertJsonToTurtle(
+    public ResponseEntity<Resource> JsonDataToTurtle(
             @RequestBody RdfDataDto rdfData,
             @RequestParam(value = "filename", defaultValue = "data-correct.ttl") String filename) {
 
