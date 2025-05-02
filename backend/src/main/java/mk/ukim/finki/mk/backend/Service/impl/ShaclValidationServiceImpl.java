@@ -1,10 +1,11 @@
 package mk.ukim.finki.mk.backend.Service.impl;
 
-import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclValidationDTO;
+import mk.ukim.finki.mk.backend.Models.DTO.validation.ShaclValidationDTO;
 import mk.ukim.finki.mk.backend.Models.DTO.validation.ValidationError;
 import mk.ukim.finki.mk.backend.Service.ShaclValidationService;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
 import org.apache.jena.shacl.ShaclValidator;
 import org.apache.jena.shacl.ValidationReport;
 import org.apache.jena.shacl.Shapes;
@@ -34,32 +35,26 @@ public class ShaclValidationServiceImpl implements ShaclValidationService
         return new ShaclValidationDTO(report.conforms(), validationErrors);
     }
 
-    public ShaclValidationDTO validateRdfAgainstShacl(String dataFilePath, String shapesFilePath)
-    {
-        try
-        {
-            // Load SHACL Shapes
+    @Override
+    public ShaclValidationDTO validateRdfAgainstShacl(String dataFilePath, String shapesFilePath) {
+        try {
+            // Load SHACL shapes from filesystem
             Model shapesModel = ModelFactory.createDefaultModel();
-            InputStream shapesStream = getClass().getClassLoader().getResourceAsStream(shapesFilePath);
-            assert shapesStream != null;
-            RDFDataMgr.read(shapesModel, shapesStream, null, org.apache.jena.riot.Lang.TURTLE);
+            // this will happily read a local .ttl file on disk
+            RDFDataMgr.read(shapesModel, shapesFilePath, Lang.TURTLE);
             Shapes shapes = Shapes.parse(shapesModel.getGraph());
 
-            // Load RDF Data
+            // Load RDF data from filesystem
             Model dataModel = ModelFactory.createDefaultModel();
-            InputStream dataStream = getClass().getClassLoader().getResourceAsStream(dataFilePath);
-            assert dataStream != null;
-            RDFDataMgr.read(dataModel, dataStream, null, org.apache.jena.riot.Lang.TURTLE);
+            RDFDataMgr.read(dataModel, dataFilePath, Lang.TURTLE);
 
             // Validate
-            ValidationReport report = ShaclValidator.get().validate(shapes, dataModel.getGraph());
-
-            // Return report as text
+            ValidationReport report = ShaclValidator.get()
+                    .validate(shapes, dataModel.getGraph());
             return this.generateShaclValidationDTO(report);
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
+
+        } catch (Exception e) {
+            throw new RuntimeException("SHACL validation failed", e);
         }
     }
 }
