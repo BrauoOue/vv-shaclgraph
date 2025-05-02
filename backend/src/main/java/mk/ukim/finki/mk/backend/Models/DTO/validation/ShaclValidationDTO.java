@@ -1,6 +1,4 @@
-package mk.ukim.finki.mk.backend.Models.DTO.shacl;
-
-import mk.ukim.finki.mk.backend.Models.DTO.validation.ValidationError;
+package mk.ukim.finki.mk.backend.Models.DTO.validation;
 
 import java.util.List;
 

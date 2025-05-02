@@ -2,10 +2,10 @@ package mk.ukim.finki.mk.backend.Service.impl;
 
 
 import mk.ukim.finki.mk.backend.Models.DTO.shacl.BHelpers;
-import mk.ukim.finki.mk.backend.Models.DTO.shacl.RdfNamespace;
-import mk.ukim.finki.mk.backend.Models.DTO.shacl.RdfPair;
-import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclDTO;
-import mk.ukim.finki.mk.backend.Service.ShaclService;
+import mk.ukim.finki.mk.backend.Models.DTO.shacl.RdfNamespacePair;
+import mk.ukim.finki.mk.backend.Models.DTO.shacl.RdfUri;
+import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclDto;
+import mk.ukim.finki.mk.backend.Service.ShaclConversionService;
 import org.apache.jena.graph.Node;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.shacl.Shapes;
@@ -16,11 +16,10 @@ import org.apache.jena.shacl.parser.*;
 import org.apache.jena.sparql.expr.NodeValue;
 import org.apache.jena.vocabulary.RDF;
 import org.springframework.stereotype.Service;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 
-import java.io.ByteArrayInputStream;
+
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,11 +31,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 @Service
-public class ShaclServiceImpl implements ShaclService
+public class ShaclConversionServiceImpl implements ShaclConversionService
 {
-    private static String SH = "http://www.w3.org/ns/shacl#";
+    private static String SH_NAMESPACE = "http://www.w3.org/ns/shacl#";
 
-    public ShaclDTO parseShaclToShaclDTO(MultipartFile shaclFile)
+    public ShaclDto convertShaclTtlToDto(MultipartFile shaclFile)
     {
         Model model = ModelFactory.createDefaultModel();
 
@@ -51,14 +50,19 @@ public class ShaclServiceImpl implements ShaclService
         Map<String, String> nsToPrefixMap = BHelpers.invertMap(prefixToNsMap);
 
         Shapes shapes = Shapes.parse(model);
-        ShaclDTO dto = new ShaclDTO();
-        dto.setPrefixToNsMap(prefixToNsMap.entrySet().stream().map(entry->new RdfNamespace(entry.getValue(), entry.getKey())).collect(Collectors.toList()));
-        List<ShaclDTO.Shape> shapeList = new ArrayList<>();
+        ShaclDto dto = new ShaclDto();
+        dto.setPrefixToNsMap(prefixToNsMap
+                .entrySet()
+                .stream()
+                .map(entry -> new RdfNamespacePair(entry.getValue(), entry.getKey()))
+                .collect(Collectors.toList()));
+
+        List<ShaclDto.Shape> shapeList = new ArrayList<>();
 
         shapes.forEach(shape ->
         {
-            ShaclDTO.Shape dtoShape = new ShaclDTO.Shape();
-            dtoShape.setName(RdfPair.toPair(shape.getShapeNode().toString(), null).getName());
+            ShaclDto.Shape dtoShape = new ShaclDto.Shape();
+            dtoShape.setShapeName(RdfUri.toRdfUri(shape.getShapeNode().toString(), nsToPrefixMap));
 
             for (Target target : shape.getTargets())
             {
@@ -68,7 +72,7 @@ public class ShaclServiceImpl implements ShaclService
                 if (node == null) continue;
 
                 String uri = node.isURI() ? node.getURI() : node.toString();
-                RdfPair pair = RdfPair.toPair(uri, nsToPrefixMap);
+                RdfUri pair = RdfUri.toRdfUri(uri, nsToPrefixMap);
 
                 switch (type)
                 {
@@ -88,23 +92,34 @@ public class ShaclServiceImpl implements ShaclService
 
 
             }
-            List<ShaclDTO.Property> props = new ArrayList<>();
+
+            //Set the shape's messages and constrains
+
+            dtoShape.setSeverity(RdfUri.toRdfUri(shape.getSeverity().level().toString(), nsToPrefixMap));
+            dtoShape.setMessage(shape
+                    .getMessages()
+                    .iterator()
+                    .next()
+                    .getLiteralLexicalForm());
+
+
+            List<ShaclDto.Property> props = new ArrayList<>();
 
             for (PropertyShape s : shape.getPropertyShapes())
             {
                 if (s != null)
                 {
-                    ShaclDTO.Property dtoProp = new ShaclDTO.Property();
+                    ShaclDto.Property dtoProp = new ShaclDto.Property();
 
                     if (s.getPath() != null)
                     {
                         String pathStr = ShaclPaths.pathToString(s.getPath());
-                        dtoProp.setPath(RdfPair.toPair(pathStr, nsToPrefixMap));
+                        dtoProp.setPath(RdfUri.toRdfUri(pathStr, nsToPrefixMap));
                     }
 
                     if (s.getSeverity() != null)
                     {
-                        dtoProp.setSeverity(RdfPair.toPair(s.getSeverity().level().toString(), nsToPrefixMap));
+                        dtoProp.setSeverity(RdfUri.toRdfUri(s.getSeverity().level().toString(), nsToPrefixMap));
                     }
 
                     if (!s.getMessages().isEmpty())
@@ -129,121 +144,131 @@ public class ShaclServiceImpl implements ShaclService
         return dto;
     }
 
-    public String parseShaclDTOShacl(ShaclDTO dto)
+    public String convertShaclDtoToTtl(ShaclDto dto)
     {
         Model model = ModelFactory.createDefaultModel();
 
-        // Register SHACL prefix
-        model.setNsPrefix("sh", SH);
+        model.setNsPrefix("sh", SH_NAMESPACE);
 
-        // Register namespace prefixes from DTO
         Map<String, String> nsMap = new HashMap<>();
+
+        dto.getPrefixToNsMap()
+                .forEach(ns -> nsMap
+                        .put(ns.getPrefix(), ns.getNamespace()));
+
         nsMap.forEach(model::setNsPrefix);
 
 
-        for (ShaclDTO.Shape shape : dto.getShapeConstrains())
+        for (ShaclDto.Shape shape : dto.getShapeConstrains())
         {
-            // Create a SH NodeShape resource
-            Resource shapeRes = model.createResource(getFullUri(shape.getName(), nsMap));
-            shapeRes.addProperty(RDF.type, model.createResource(SH + "NodeShape"));
+            Resource shapeRes = model.createResource(shape.getShapeName().getFullUri());
+            shapeRes.addProperty(RDF.type, model.createResource(SH_NAMESPACE + "NodeShape"));
 
             // Attach targets
-            addTarget(shapeRes, "targetClass", shape.getTargetClass(), model, nsMap);
-            addTarget(shapeRes, "targetNode", shape.getTargetNode(), model, nsMap);
-            addTarget(shapeRes, "targetSubjectsOf", shape.getTargetSubjectsOf(), model, nsMap);
-            addTarget(shapeRes, "targetObjectsOf", shape.getTargetObjectsOf(), model, nsMap);
+            addTarget(shapeRes, "targetClass", shape.getTargetClass(), model);
+            addTarget(shapeRes, "targetNode", shape.getTargetNode(), model);
+            addTarget(shapeRes, "targetSubjectsOf", shape.getTargetSubjectsOf(), model);
+            addTarget(shapeRes, "targetObjectsOf", shape.getTargetObjectsOf(), model);
+
             // Message and severity
             if (shape.getMessage() != null)
             {
-                shapeRes.addProperty(model.createProperty(SH, "message"), shape.getMessage());
+                shapeRes.addProperty(model.createProperty(SH_NAMESPACE, "message"), shape.getMessage());
             }
             if (shape.getSeverity() != null)
             {
-                Resource sev = model.createResource(getFullUri(shape.getSeverity(), nsMap));
-                shapeRes.addProperty(model.createProperty(SH, "severity"), sev);
+                shapeRes.addProperty(model.createProperty(SH_NAMESPACE, "severity"), model.createResource(shape.getSeverity().getFullUri()));
             }
 
             // Add property constraints
             if (shape.getProperties() != null)
             {
-                for (ShaclDTO.Property prop : shape.getProperties())
+                for (ShaclDto.Property prop : shape.getProperties())
                 {
                     Resource propShape = model.createResource(); // blank node
-                    shapeRes.addProperty(model.createProperty(SH, "property"), propShape);
+                    shapeRes.addProperty(model.createProperty(SH_NAMESPACE, "property"), propShape);
                     // Path
                     if (prop.getPath() != null)
                     {
-                        propShape.addProperty(model.createProperty(SH, "path"),
-                                model.createProperty(getFullUri(prop.getPath(), nsMap)));
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "path"),
+                                model.createProperty(prop.getPath().getFullUri()));
                     }
                     // Datatype
                     if (prop.getDatatype() != null)
                     {
-                        propShape.addProperty(model.createProperty(SH, "datatype"),
-                                model.createResource(getFullUri(prop.getDatatype(), nsMap)));
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "datatype"),
+                                model.createResource(prop.getDatatype().getFullUri()));
                     }
                     // NodeKind
                     if (prop.getNodeKind() != null)
                     {
-                        propShape.addProperty(model.createProperty(SH, "nodeKind"),
-                                model.createResource(SH + prop.getNodeKind()));
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "nodeKind"),
+                                model.createResource(SH_NAMESPACE + prop.getNodeKind()));
                     }
                     // Counts
                     if (prop.getMinCount() != null)
                     {
-                        propShape.addLiteral(model.createProperty(SH, "minCount"), prop.getMinCount());
+                        Literal literal = model.createTypedLiteral(prop.getMinCount().toString(), XSDDatatype.XSDinteger);
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "minCount"), literal);
                     }
                     if (prop.getMaxCount() != null)
                     {
-                        propShape.addLiteral(model.createProperty(SH, "maxCount"), prop.getMaxCount());
+                        Literal literal = model.createTypedLiteral(prop.getMaxCount().toString(), XSDDatatype.XSDinteger);
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "maxCount"), literal);
                     }
                     // Class
                     if (prop.getClazz() != null)
                     {
-                        propShape.addProperty(model.createProperty(SH, "class"),
-                                model.createResource(getFullUri(prop.getClazz(), nsMap)));
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "class"),
+                                model.createResource(prop.getClazz().getFullUri()));
                     }
                     // Pattern
                     if (prop.getPattern() != null)
                     {
-                        propShape.addProperty(model.createProperty(SH, "pattern"), prop.getPattern());
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "pattern"), prop.getPattern());
                     }
                     // In values
                     if (prop.getInValues() != null && !prop.getInValues().isEmpty())
                     {
-                        RDFList list = model.createList(prop.getInValues().stream()
-                                .map(model::createLiteral).iterator());
-                        propShape.addProperty(model.createProperty(SH, "in"), list);
+                        RDFList list = model.createList(prop
+                                .getInValues()
+                                .stream()
+                                .map(model::createLiteral)
+                                .iterator());
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "in"), list);
                     }
                     // Min/Max inclusive
                     if (prop.getMinInclusive() != null)
                     {
-                        propShape.addLiteral(model.createProperty(SH, "minInclusive"), prop.getMinInclusive());
+
+                        Literal literal = model.createTypedLiteral(prop.getMinInclusive().toString(), XSDDatatype.XSDdecimal);
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "minInclusive"), literal);
                     }
                     if (prop.getMaxInclusive() != null)
                     {
-                        propShape.addLiteral(model.createProperty(SH, "maxInclusive"), prop.getMaxInclusive());
+                        Literal literal = model.createTypedLiteral(prop.getMaxInclusive().toString(), XSDDatatype.XSDdecimal);
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "maxInclusive"), literal);
                     }
                     // HasValue
                     if (prop.getHasValue() != null)
                     {
-                        propShape.addProperty(model.createProperty(SH, "hasValue"), prop.getHasValue());
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "hasValue"), prop.getHasValue());
                     }
                     // LessThan
                     if (prop.getLessThan() != null)
                     {
-                        propShape.addProperty(model.createProperty(SH, "lessThan"),
-                                model.createProperty(getFullUri(prop.getLessThan(), nsMap)));
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "lessThan"),
+                                model.createProperty(prop.getLessThan().getFullUri()));
                     }
                     // Message and severity
                     if (prop.getMessage() != null)
                     {
-                        propShape.addProperty(model.createProperty(SH, "message"), prop.getMessage());
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "message"), prop.getMessage());
                     }
                     if (prop.getSeverity() != null)
                     {
-                        propShape.addProperty(model.createProperty(SH, "severity"),
-                                model.createResource(getFullUri(prop.getSeverity(), nsMap)));
+                        propShape.addProperty(model.createProperty(SH_NAMESPACE, "severity"),
+                                model.createResource(prop.getSeverity().getFullUri()));
                     }
                 }
             }
@@ -251,97 +276,24 @@ public class ShaclServiceImpl implements ShaclService
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         model.write(out, "TURTLE");
-        return out.toString(); // defaults to UTF-8
+        return out.toString();
     }
 
-    private static void addTarget(Resource shapeRes, String targetName, RdfPair pair, Model model, Map<String, String> nsMap)
+    private static void addTarget(Resource shapeRes, String targetName, RdfUri targetRdfUri, Model model)
     {
-        if (pair != null)
+        if (targetRdfUri != null)
         {
-
-            Property p = model.createProperty(SH, targetName);
-            if ("targetClass".equals(targetName))
-            {
-                shapeRes.addProperty(p, model.createResource(getFullUri(pair, nsMap)));
-            }
-            else
-            {
-                shapeRes.addProperty(p, model.createProperty(getFullUri(pair, nsMap)));
-            }
-        }
-    }
-
-    private static Map<String, String> collectNamespaces(ShaclDTO dto)
-    {
-        Map<String, String> map = new HashMap<>();
-        dto.getShapeConstrains().forEach(shape ->
-        {
-            collect(shape.getTargetClass(), map);
-            collect(shape.getTargetNode(), map);
-            collect(shape.getTargetSubjectsOf(), map);
-            collect(shape.getTargetObjectsOf(), map);
-            if (shape.getProperties() != null)
-            {
-                shape.getProperties().forEach(prop ->
-                {
-                    collect(prop.getPath(), map);
-                    collect(prop.getDatatype(), map);
-                    collect(prop.getClazz(), map);
-                    collect(prop.getLessThan(), map);
-                    RdfPair sev = prop.getSeverity();
-                    if (sev != null) collect(sev, map);
-                });
-            }
-            RdfPair sev = shape.getSeverity() != null ? new RdfPair(shape.getSeverity(), shape.getSeverity(), null) : null;
-            if (sev != null) collect(sev, map);
-        });
-        return map;
-    }
-
-    private static void collect(RdfPair rp, Map<String, String> map)
-    {
-        if (rp != null && rp.getNsPrefix() != null && rp.getNamespace() != null && !"None".equals(rp.getNamespace()))
-        {
-            map.put(rp.getNsPrefix(), rp.getNamespace());
-        }
-    }
-
-    private static String getFullUri(String name, Map<String, String> nsMap)
-    {
-        // If name contains colon, prefix:name
-        if (name.contains(":"))
-        {
-            String[] parts = name.split(":", 2);
-            String prefix = parts[0];
-            String local = parts[1];
-            String ns = nsMap.get(prefix);
-            if (ns != null) return ns + local;
-        }
-        return name;
-    }
-
-    private static String getFullUri(RdfPair pair, Map<String, String> nsMap)
-    {
-        if (pair.getNamespace() != null && !"None".equals(pair.getNamespace()))
-        {
-            return pair.getNamespace() + pair.getName();
-        }
-        else if (pair.getNsPrefix() != null && nsMap.containsKey(pair.getNsPrefix()))
-        {
-            return nsMap.get(pair.getNsPrefix()) + pair.getName();
-        }
-        else
-        {
-            return pair.getName();
+            Property p = model.createProperty(SH_NAMESPACE, targetName);
+            shapeRes.addProperty(p, model.createResource(targetRdfUri.getFullUri()));
         }
     }
 
     public static class ConstraintVisitor extends ConstraintVisitorBase
     {
-        private final ShaclDTO.Property dtoProp;
+        private final ShaclDto.Property dtoProp;
         private final Map<String, String> nsToPrefixMap;
 
-        public ConstraintVisitor(ShaclDTO.Property dtoProp, Map<String, String> nsToPrefixMap)
+        public ConstraintVisitor(ShaclDto.Property dtoProp, Map<String, String> nsToPrefixMap)
         {
             this.dtoProp = dtoProp;
             this.nsToPrefixMap = nsToPrefixMap;
@@ -352,14 +304,14 @@ public class ShaclServiceImpl implements ShaclService
         {
             Node cls = constraint.getExpectedClass();
             String uri = cls.isURI() ? cls.getURI() : cls.toString();
-            dtoProp.setClazz(RdfPair.toPair(uri, nsToPrefixMap));
+            dtoProp.setClazz(RdfUri.toRdfUri(uri, nsToPrefixMap));
         }
 
 
         @Override
         public void visit(DatatypeConstraint constraint)
         {
-            dtoProp.setDatatype(RdfPair.toPair(constraint.getDatatype().toString(), nsToPrefixMap));
+            dtoProp.setDatatype(RdfUri.toRdfUri(constraint.getDatatype().toString(), nsToPrefixMap));
         }
 
         @Override
@@ -423,7 +375,7 @@ public class ShaclServiceImpl implements ShaclService
         @Override
         public void visit(LessThanConstraint constraint)
         {
-            dtoProp.setLessThan(RdfPair.toPair(constraint.getValue().toString(), nsToPrefixMap));
+            dtoProp.setLessThan(RdfUri.toRdfUri(constraint.getValue().toString(), nsToPrefixMap));
 
         }
     }

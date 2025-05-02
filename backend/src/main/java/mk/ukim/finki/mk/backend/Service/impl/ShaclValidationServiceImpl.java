@@ -1,6 +1,6 @@
 package mk.ukim.finki.mk.backend.Service.impl;
 
-import mk.ukim.finki.mk.backend.Models.DTO.shacl.ShaclValidationDTO;
+import mk.ukim.finki.mk.backend.Models.DTO.validation.ShaclValidationDTO;
 import mk.ukim.finki.mk.backend.Models.DTO.validation.ValidationError;
 import mk.ukim.finki.mk.backend.Service.ShaclValidationService;
 import org.apache.jena.rdf.model.Model;

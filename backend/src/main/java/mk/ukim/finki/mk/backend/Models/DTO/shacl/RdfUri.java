@@ -1,5 +1,6 @@
 package mk.ukim.finki.mk.backend.Models.DTO.shacl;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,27 +8,27 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class RdfPair
+public class RdfUri
 {
     private String namespace;
     private String nsPrefix;
-    private String name;
+    private String resource;
 
-    public RdfPair()
+    public RdfUri()
     {
     }
 
-    public RdfPair(String nsPrefix, String name)
+    public RdfUri(String nsPrefix, String resource)
     {
         this.nsPrefix = nsPrefix;
-        this.name = name;
+        this.resource = resource;
         this.namespace = "None";
     }
 
-    public RdfPair(String nsPrefix, String name, String namespace)
+    public RdfUri(String nsPrefix, String resource, String namespace)
     {
         this.nsPrefix = nsPrefix;
-        this.name = name;
+        this.resource = resource;
         this.namespace = namespace;
     }
 
@@ -60,15 +61,15 @@ public class RdfPair
     }
 
 
-    public static RdfPair toPair(String fullUri, Map<String, String> prefixMap)
+    public static RdfUri toRdfUri(String fullUri, Map<String, String> prefixMap)
     {
-        RdfPair pair = new RdfPair();
+        RdfUri pair = new RdfUri();
         int idx = Math.max(fullUri.lastIndexOf('#'), fullUri.lastIndexOf('/'));
         if (idx != -1)
         {
             String namespace = cleanArrows(fullUri.substring(0, idx + 1));
             String nsPrefix = null;
-            String name = fullUri.substring(idx + 1);
+            String resource = fullUri.substring(idx + 1);
 
             if (prefixMap != null)
             {
@@ -82,14 +83,20 @@ public class RdfPair
 
             pair.setNamespace(namespace);
             pair.setNsPrefix(nsPrefix);
-            pair.setName(cleanArrows(name));
+            pair.setResource(cleanArrows(resource));
         }
         else
         {
             pair.setNamespace(cleanArrows(fullUri));
             pair.setNsPrefix("Not found");
-            pair.setName("Not found");
+            pair.setResource("Not found");
         }
         return pair;
+    }
+
+    @JsonIgnore
+    public String getFullUri()
+    {
+        return this.namespace + this.resource;
     }
 }
