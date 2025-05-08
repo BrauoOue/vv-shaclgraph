@@ -1,22 +1,17 @@
 package mk.ukim.finki.mk.backend.Models.DTO.shacl;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
-import java.util.Map;
-
-
-
 
 
 @Getter
 @Setter
-public class ShaclDTO
+public class ShaclDto
 {
     @JsonProperty("namespaces")
-    private List<RdfNamespace> prefixToNsMap;
+    private List<RdfNamespacePair> prefixToNsMap;
     // List of SHACL shape definitions (each defines constraints for a target)
     private List<Shape> shapeConstrains;
 
@@ -25,25 +20,29 @@ public class ShaclDTO
     public static class Shape
     {
         // Name of the shape (typically used as an identifier or label)
-        private String name;
+        private RdfUri shapeName;
 
         // The target RDF class that this shape applies to (sh:targetClass)
-        private RdfPair targetClass;
+        private RdfUri targetClass;
 
         // A specific RDF node that this shape applies to (sh:targetNode)
-        private RdfPair targetNode;
+        private RdfUri targetNode;
 
         // All subjects of a given predicate that this shape applies to (sh:targetSubjectsOf)
-        private RdfPair targetSubjectsOf;
+        private RdfUri targetSubjectsOf;
 
         // All objects of a given predicate that this shape applies to (sh:targetObjectsOf)
-        private RdfPair targetObjectsOf;
+        private RdfUri targetObjectsOf;
 
         // Validation message to show when the shape is violated (sh:message)
         private String message;
 
+//        // Validation messages to show when the shape is violated (sh:message)
+//        private List<String> messages;
+
+
         // Severity level of the validation result: Violation, Warning, or Info (sh:severity)
-        private String severity;
+        private RdfUri severity;
 
         // List of property constraints defined within this shape (sh:property)
         private List<Property> properties;
@@ -54,10 +53,10 @@ public class ShaclDTO
     public static class Property
     {
         // Path (predicate) that the property constraint applies to (sh:path)
-        private RdfPair path;
+        private RdfUri path;
 
         // Expected datatype for the value of the path (sh:datatype)
-        private RdfPair datatype;
+        private RdfUri datatype;
 
         // Expected type of node: IRI, Literal, or BlankNode (sh:nodeKind)
         private String nodeKind;
@@ -69,7 +68,7 @@ public class ShaclDTO
         private Integer maxCount;
 
         // Expected RDF class for the object at this path (sh:class)
-        private RdfPair clazz;
+        private RdfUri clazz;
 
         // Regular expression that the value must match (sh:pattern)
         private String pattern;
@@ -87,13 +86,13 @@ public class ShaclDTO
         private String hasValue;
 
         // Another property that this property's value must be less than (sh:lessThan)
-        private RdfPair lessThan;
+        private RdfUri lessThan;
 
         // Validation message to show when this property constraint is violated (sh:message)
         private String message;
 
         // Severity level of this specific property constraint: Violation, Warning, or Info (sh:severity)
-        private RdfPair severity;
+        private RdfUri severity;
     }
 
 

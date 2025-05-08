@@ -4,7 +4,7 @@ import mk.ukim.finki.mk.backend.Models.DTO.data.DataEntryDto;
 import mk.ukim.finki.mk.backend.Models.DTO.data.NamespaceDto;
 import mk.ukim.finki.mk.backend.Models.DTO.data.RdfDataDto;
 import mk.ukim.finki.mk.backend.Models.DTO.data.TripletDto;
-import mk.ukim.finki.mk.backend.Service.ConversionService;
+import mk.ukim.finki.mk.backend.Service.DataConversionService;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.Lang;
@@ -20,10 +20,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class ConversionServiceImpl implements ConversionService {
+public class DataConversionServiceImpl implements DataConversionService
+{
 
     @Override
-    public RdfDataDto convertTurtleToRdfDataDto(MultipartFile rdfFile) {
+    public RdfDataDto convertDataTtlToDto(MultipartFile rdfFile) {
         try (InputStream in = rdfFile.getInputStream()) {
             Model model = ModelFactory.createDefaultModel();
             RDFDataMgr.read(model, in, /* baseURI  */ null, /* lang= */ Lang.TURTLE);
@@ -128,7 +129,7 @@ public class ConversionServiceImpl implements ConversionService {
 
 
     @Override
-    public byte[] convertDtoToTurtleFile(RdfDataDto rdfData) {
+    public String convertDataDtoToTtl(RdfDataDto rdfData) {
         Model model = ModelFactory.createDefaultModel();
 
         if (rdfData.getNamespaces() != null) {
@@ -165,10 +166,14 @@ public class ConversionServiceImpl implements ConversionService {
             }
         }
 
-        // Serialize to Turtle format (byte array)
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        RDFDataMgr.write(outputStream, model, RDFFormat.TURTLE);
-        return outputStream.toByteArray();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        model.write(out, "TURTLE");
+        return out.toString();
+
+//        // Serialize to Turtle format (byte array)
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//        RDFDataMgr.write(outputStream, model, RDFFormat.TURTLE);
+//        return outputStream.toByteArray();
     }
 
 
