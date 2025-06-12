@@ -1,0 +1,7 @@
+.clazzComponent{
+    background-color: palegoldenrod;
+}
+.classHeader,.classRow{
+    display: flex;
+    gap: 0.1rem;
+}

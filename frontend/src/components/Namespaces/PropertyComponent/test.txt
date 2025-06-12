@@ -1,0 +1,13 @@
+{
+        "name": "seeAlso",
+        "comment": "Further information about the subject resource.",
+        "domain": {
+          "nsPrefix": "rdfs",
+          "domainType": "Resource"
+        },
+        "range": {
+          "nsPrefix": "rdfs",
+          "domainType": "Resource"
+        },
+        "isDefinedBy": "rdfs"
+}
