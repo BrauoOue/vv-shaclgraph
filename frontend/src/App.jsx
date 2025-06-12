@@ -1,25 +1,37 @@
 import './App.css'
+import Navbar from "./components/Navbar/Navbar.jsx";
+import ShaclPage from "./components/ShaclPage.jsx";
+import {useState} from "react";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import NamespacesPage from "./components/NamespacesPage.jsx";
+import DataPage from "./components/DataPage/DataPage.jsx";
 
-function App() {
+function App()
+{
+
+
+    const [isLoadedShacl, setIsLoadedShacl] = useState(false)
 
     return (
-        <div>
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>Col 1</th>
-                    <th>Col 2</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr className="target">
-                    <td>Data 1</td>
-                    <td>Data 2</td>
-                </tr>
+        <BrowserRouter>
 
-                </tbody>
-            </table>
-        </div>
+            <div className="app">
+                <div className="main-content">
+                    <Navbar></Navbar>
+                    <div>
+                        <Routes>
+                            <Route path="/" element={<ShaclPage/>}/>
+                            <Route path="/namespaces" element={<NamespacesPage/>}/>
+                        </Routes>
+                    </div>
+                </div>
+                <div className="data-content">
+                    <DataPage></DataPage>
+                </div>
+            </div>
+        </BrowserRouter>
+
+
     );
 }
 
