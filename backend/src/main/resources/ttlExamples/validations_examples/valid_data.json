@@ -1,0 +1,139 @@
+{
+    "valid": true,
+    "namespaces": [
+        {
+            "prefix": "xsd",
+            "url": "http://www.w3.org/2001/XMLSchema#"
+        },
+        {
+            "prefix": "rdfs",
+            "url": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        },
+        {
+            "prefix": "ex",
+            "url": "http://example.org/"
+        }
+    ],
+    "data": [
+        {
+            "subject": "alexOther",
+            "subjectNsPrefix": "ex",
+            "error": false,
+            "errorMsg": null,
+            "triplets": [
+                {
+                    "predicate": "gender",
+                    "predicateNsPrefix": "ex",
+                    "object": "Other",
+                    "objectNsPrefix": null,
+                    "error": false,
+                    "errorMsg": null
+                },
+                {
+                    "predicate": "age",
+                    "predicateNsPrefix": "ex",
+                    "object": "40",
+                    "objectNsPrefix": null,
+                    "error": false,
+                    "errorMsg": null
+                },
+                {
+                    "predicate": "name",
+                    "predicateNsPrefix": "ex",
+                    "object": "Alex",
+                    "objectNsPrefix": null,
+                    "error": false,
+                    "errorMsg": null
+                },
+                {
+                    "predicate": "type",
+                    "predicateNsPrefix": "rdfs",
+                    "object": "Person",
+                    "objectNsPrefix": "ex",
+                    "error": false,
+                    "errorMsg": null
+                }
+            ]
+        },
+        {
+            "subject": "johnDoe",
+            "subjectNsPrefix": "ex",
+            "error": false,
+            "errorMsg": null,
+            "triplets": [
+                {
+                    "predicate": "gender",
+                    "predicateNsPrefix": "ex",
+                    "object": "Male",
+                    "objectNsPrefix": null,
+                    "error": false,
+                    "errorMsg": null
+                },
+                {
+                    "predicate": "age",
+                    "predicateNsPrefix": "ex",
+                    "object": "30",
+                    "objectNsPrefix": null,
+                    "error": false,
+                    "errorMsg": null
+                },
+                {
+                    "predicate": "name",
+                    "predicateNsPrefix": "ex",
+                    "object": "John",
+                    "objectNsPrefix": null,
+                    "error": false,
+                    "errorMsg": null
+                },
+                {
+                    "predicate": "type",
+                    "predicateNsPrefix": "rdfs",
+                    "object": "Person",
+                    "objectNsPrefix": "ex",
+                    "error": false,
+                    "errorMsg": null
+                }
+            ]
+        },
+        {
+            "subject": "janeSmith",
+            "subjectNsPrefix": "ex",
+            "error": false,
+            "errorMsg": null,
+            "triplets": [
+                {
+                    "predicate": "gender",
+                    "predicateNsPrefix": "ex",
+                    "object": "Female",
+                    "objectNsPrefix": null,
+                    "error": false,
+                    "errorMsg": null
+                },
+                {
+                    "predicate": "age",
+                    "predicateNsPrefix": "ex",
+                    "object": "25",
+                    "objectNsPrefix": null,
+                    "error": false,
+                    "errorMsg": null
+                },
+                {
+                    "predicate": "name",
+                    "predicateNsPrefix": "ex",
+                    "object": "Jane",
+                    "objectNsPrefix": null,
+                    "error": false,
+                    "errorMsg": null
+                },
+                {
+                    "predicate": "type",
+                    "predicateNsPrefix": "rdfs",
+                    "object": "Person",
+                    "objectNsPrefix": "ex",
+                    "error": false,
+                    "errorMsg": null
+                }
+            ]
+        }
+    ]
+}

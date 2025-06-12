@@ -168,12 +168,8 @@ public class DataConversionServiceImpl implements DataConversionService
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         model.write(out, "TURTLE");
-        return out.toString();
-
-//        // Serialize to Turtle format (byte array)
-//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        RDFDataMgr.write(outputStream, model, RDFFormat.TURTLE);
-//        return outputStream.toByteArray();
+        String result = out.toString();
+        return result.replace("rdfs:type", "a");
     }
 
 

@@ -96,12 +96,13 @@ public class ShaclConversionServiceImpl implements ShaclConversionService
             //Set the shape's messages and constrains
 
             dtoShape.setSeverity(RdfUri.toRdfUri(shape.getSeverity().level().toString(), nsToPrefixMap));
+
             dtoShape.setMessage(shape
                     .getMessages()
-                    .iterator()
-                    .next()
-                    .getLiteralLexicalForm());
-
+                    .stream()
+                    .findFirst()
+                    .map(Node::getLiteralLexicalForm)
+                    .orElse(null));
 
             List<ShaclDto.Property> props = new ArrayList<>();
 

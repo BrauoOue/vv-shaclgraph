@@ -1,0 +1,17 @@
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:invalid1 a ex:Person ;
+    ex:name "john" ;     # lowercase
+    ex:age 200 ;         # too high
+    ex:gender "Alien" .  # invalid value
+
+ex:invalid2 a ex:Person ;
+    ex:name "mary" ;     # lowercase
+    ex:age -5 ;          # negative
+    ex:gender "Female" .
+
+ex:invalid3 a ex:Person ;
+    ex:name "Bob" ;
+    ex:age 151 ;         # just above max
+    ex:gender "Other" .
