@@ -1,0 +1,125 @@
+{
+    "shapeConstrains": [
+        {
+            "shapeName": {
+                "namespace": "http://example.org/",
+                "nsPrefix": "ex",
+                "resource": "PersonShape"
+            },
+            "targetClass": {
+                "namespace": "http://example.org/",
+                "nsPrefix": "ex",
+                "resource": "Person"
+            },
+            "targetNode": null,
+            "targetSubjectsOf": null,
+            "targetObjectsOf": null,
+            "message": null,
+            "severity": {
+                "namespace": "http://www.w3.org/ns/shacl#",
+                "nsPrefix": "sh",
+                "resource": "Violation"
+            },
+            "properties": [
+                {
+                    "path": {
+                        "namespace": "http://example.org/",
+                        "nsPrefix": "ex",
+                        "resource": "gender"
+                    },
+                    "datatype": null,
+                    "nodeKind": null,
+                    "minCount": null,
+                    "maxCount": null,
+                    "clazz": null,
+                    "pattern": null,
+                    "inValues": [
+                        "Male",
+                        "Female",
+                        "Other"
+                    ],
+                    "minInclusive": null,
+                    "maxInclusive": null,
+                    "hasValue": null,
+                    "lessThan": null,
+                    "message": "Gender must be one of: Male, Female, Other.",
+                    "severity": {
+                        "namespace": "http://www.w3.org/ns/shacl#",
+                        "nsPrefix": "sh",
+                        "resource": "Violation"
+                    }
+                },
+                {
+                    "path": {
+                        "namespace": "http://example.org/",
+                        "nsPrefix": "ex",
+                        "resource": "age"
+                    },
+                    "datatype": {
+                        "namespace": "http://www.w3.org/2001/XMLSchema#",
+                        "nsPrefix": "xsd",
+                        "resource": "integer"
+                    },
+                    "nodeKind": null,
+                    "minCount": null,
+                    "maxCount": null,
+                    "clazz": null,
+                    "pattern": null,
+                    "inValues": null,
+                    "minInclusive": 0.0,
+                    "maxInclusive": 150.0,
+                    "hasValue": null,
+                    "lessThan": null,
+                    "message": "Age must be between 0 and 150.",
+                    "severity": {
+                        "namespace": "http://www.w3.org/ns/shacl#",
+                        "nsPrefix": "sh",
+                        "resource": "Violation"
+                    }
+                },
+                {
+                    "path": {
+                        "namespace": "http://example.org/",
+                        "nsPrefix": "ex",
+                        "resource": "name"
+                    },
+                    "datatype": {
+                        "namespace": "http://www.w3.org/2001/XMLSchema#",
+                        "nsPrefix": "xsd",
+                        "resource": "string"
+                    },
+                    "nodeKind": null,
+                    "minCount": 1,
+                    "maxCount": 1,
+                    "clazz": null,
+                    "pattern": "^[A-Z][a-z]+",
+                    "inValues": null,
+                    "minInclusive": null,
+                    "maxInclusive": null,
+                    "hasValue": null,
+                    "lessThan": null,
+                    "message": "Name must start with a capital letter and contain only letters.",
+                    "severity": {
+                        "namespace": "http://www.w3.org/ns/shacl#",
+                        "nsPrefix": "sh",
+                        "resource": "Violation"
+                    }
+                }
+            ]
+        }
+    ],
+    "namespaces": [
+        {
+            "prefix": "xsd",
+            "url": "http://www.w3.org/2001/XMLSchema#"
+        },
+        {
+            "prefix": "sh",
+            "url": "http://www.w3.org/ns/shacl#"
+        },
+        {
+            "prefix": "ex",
+            "url": "http://example.org/"
+        }
+    ]
+}

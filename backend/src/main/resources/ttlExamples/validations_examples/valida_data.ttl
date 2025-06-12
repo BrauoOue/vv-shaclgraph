@@ -1,0 +1,17 @@
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:johnDoe a ex:Person ;
+    ex:name "John" ;
+    ex:age 30 ;
+    ex:gender "Male" .
+
+ex:janeSmith a ex:Person ;
+    ex:name "Jane" ;
+    ex:age 25 ;
+    ex:gender "Female" .
+
+ex:alexOther a ex:Person ;
+    ex:name "Alex" ;
+    ex:age 40 ;
+    ex:gender "Other" .

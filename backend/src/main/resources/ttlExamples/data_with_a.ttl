@@ -1,0 +1,18 @@
+@prefix ex:   <http://example.org/> .
+@prefix rdfs: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+ex:invalid3  a  ex:Person;
+        ex:age     151;
+        ex:gender  "Other";
+        ex:name    "Bob" .
+
+ex:invalid1  a  ex:Person;
+        ex:age     200;
+        ex:gender  "Alien";
+        ex:name    "john" .
+
+ex:invalid2  a  ex:Person;
+        ex:age     -5;
+        ex:gender  "Female";
+        ex:name    "mary" .
