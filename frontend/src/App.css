@@ -1,10 +1,19 @@
-.table
+.app
 {
-  background-color: red;
-  display: block;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  height: 100vh;
+
 }
 
-.target
+.main-content
 {
-  margin-left: 20px;
+  background-color: red;
 }
+
+.data-content
+{
+  background-color: blue;
+}
+
+
