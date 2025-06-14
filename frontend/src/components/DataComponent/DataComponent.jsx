@@ -1,34 +1,28 @@
 import React from 'react';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
 
-const DataComponent = () =>
-{
+const DataComponent = ({ triplet }) => {
+    const {
+        predicate,
+        predicateNsPrefix,
+        object,
+        objectNsPrefix,
+        error,
+        errorMsg
+    } = triplet;
+
     return (
-        <div>
-            <div className={"dataHeader"}>
-                <div className={"subjectNs"}>
-                    ex
-                </div>
-                <div className={"subject"}>
-                    targetClass
-                </div>
-            </div>
-            <div className={"dataBody"}>
-                <div className={"dataRow"}>
-                    <div className={"propertyNs"}>
-                        rdfs
-                    </div>
-                    <div className={"property"}>
-                        type
-                    </div>
-                    <div className={"objectNs"}>
-                        ex
-                    </div>
-                    <div className={"object"}>
-                        Person
-                    </div>
-                </div>
-            </div>
-        </div>
+        <TableRow
+            sx={{
+                backgroundColor: error ? '#ffe6e6' : 'inherit'
+            }}
+        >
+            <TableCell>{predicateNsPrefix}</TableCell>
+            <TableCell>{predicate}</TableCell>
+            <TableCell>{objectNsPrefix || ''}</TableCell>
+            <TableCell>{object}</TableCell>
+        </TableRow>
     );
 };
 
