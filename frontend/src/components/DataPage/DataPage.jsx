@@ -1,4 +1,15 @@
-import React, { useState } from 'react';
+
+import React, { useState, useContext } from 'react';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import { Context } from '../../App.jsx';
+import { updateGlobalNamespaces } from '../../utils/namespaceUtils.js';
+
 import DataComponent from '../DataComponent/DataComponent';
 import "./DataPage.css";
 // import { Context } from 'C:/Users/Asus/Desktop/vp-shacl/vv-shaclgraph/frontend/src/App.jsx'; 
@@ -8,6 +19,8 @@ const DataPage = () => {
   const [dataFile, setDataFile] = useState(null);
   const [dataJson, setDataJson] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  const { globalNamespaces, setGlobalNamespaces } = useContext(Context);
   // const [validationResult, setValidationResult] = useState(null);
 
   const handleFileChange = (e) => {
@@ -38,6 +51,7 @@ const DataPage = () => {
 
       const jsonData = await response.json();
       setDataJson(jsonData);
+      await updateGlobalNamespaces(jsonData,globalNamespaces,setGlobalNamespaces);
     } catch (err) {
       alert('Error uploading file: ' + err.message);
     } finally {

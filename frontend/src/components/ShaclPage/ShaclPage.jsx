@@ -3,12 +3,21 @@ import axios from 'axios';
 import "./ShaclPage.css"
 import ShaclComponent from "../ShaclComponents/ShaclComponent.jsx";
 import {Context} from "../../App.jsx";
+import { updateGlobalNamespaces } from "../../utils/namespaceUtils.js";
+import { fetchNamespaceByUrl } from "../../repository/namespaceRepository.js";
 import AddPredicatePopup from "../ShaclComponents/AddPredicatePopup.jsx";
 
 const ShaclPage = () =>
 {
     const [loading, setLoading] = useState(false);
-    const {shaclJson, setShaclJson} = useContext(Context)
+    const {
+        shaclJson, 
+        setShaclJson, 
+        globalNamespaces, 
+        setGlobalNamespaces, 
+        setNamespaceToShapes, 
+        setNamespaceToPredicates
+    } = useContext(Context)
     const [addPredicatePopupShow, setAddPredicatePopupShow] = useState(false);
     const [nullablePredicates, setNullablePredicates] = useState([])
     const [editingShacleObj, setEditingShacleObj] = useState(null)
@@ -50,6 +59,14 @@ const ShaclPage = () =>
                 );
 
                 setShaclJson(response.data);
+                // Fetch and append each namespace to globalNamespaces and populate maps
+                await updateGlobalNamespaces(
+                    response.data,
+                    globalNamespaces,
+                    setGlobalNamespaces,
+                    setNamespaceToShapes,
+                    setNamespaceToPredicates
+                );
             } catch (error)
             {
                 console.error("Upload error:", error);

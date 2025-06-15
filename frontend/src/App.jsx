@@ -8,15 +8,18 @@ import DataPage from "./components/DataPage/DataPage.jsx";
 import NamespaceDetailsPage from "./components/NamespaceDetailsPage.jsx";
 
 
-export const Context = createContext();
+export const Context = createContext({});
 
 
 function App()
 {
     const [shaclJson, setShaclJson] = useState(null);
+    const [globalNamespaces, setGlobalNamespaces] = useState(null);
+    const [namespaceToShapes, setNamespaceToShapes] = useState({});
+    const [namespaceToPredicates, setNamespaceToPredicates] = useState({});
 
     return (
-        <Context.Provider value={{shaclJson, setShaclJson}}>
+        <Context.Provider value={{shaclJson, setShaclJson, globalNamespaces, setGlobalNamespaces, namespaceToShapes, setNamespaceToShapes, namespaceToPredicates, setNamespaceToPredicates}}>
             <BrowserRouter>
                 <div className="app">
                     <div className="main-content">

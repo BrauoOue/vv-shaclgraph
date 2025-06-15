@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api/convert")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ConversionController
 {
 
