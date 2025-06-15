@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import DataComponent from '../DataComponent/DataComponent';
 import "./DataPage.css";
+// import { Context } from 'C:/Users/Asus/Desktop/vp-shacl/vv-shaclgraph/frontend/src/App.jsx'; 
 
 const DataPage = () => {
+  // const { shaclJson } = useContext(Context); 
   const [dataFile, setDataFile] = useState(null);
   const [dataJson, setDataJson] = useState(null);
   const [loading, setLoading] = useState(false);
+  // const [validationResult, setValidationResult] = useState(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -66,7 +69,9 @@ const DataPage = () => {
           <DataComponent key={index} subjectData={subjectData} />
         ))}
       </div>
+      <button className='myButton'>Validate</button>
     </div>
+
   );
 };
 
