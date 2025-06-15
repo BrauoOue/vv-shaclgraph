@@ -1,0 +1,21 @@
+.namespaceUrlComponent{
+    display: flex;
+    gap: 0.4rem;
+}
+.namespaceUrlComponent > * {
+    border: 1px solid black;
+    padding-inline: 1rem;
+    text-align: center;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.namespaceUrlComponent > *:first-child{
+    width: 70px;
+}
+.namespaceUrlComponent > *:last-child{
+    width: 200px;
+    cursor: pointer;
+}
+
+
+

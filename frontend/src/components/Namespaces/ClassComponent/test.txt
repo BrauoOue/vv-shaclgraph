@@ -1,0 +1,6 @@
+ {
+        "name": "Container",
+        "label": "Container",
+        "comment": "The class of RDF containers.",
+        "isDefinedBy": "rdfs"
+      },

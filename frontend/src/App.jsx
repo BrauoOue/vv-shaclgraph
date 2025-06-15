@@ -5,6 +5,7 @@ import {createContext, useState} from "react";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import NamespacesPage from "./components/NamespacesPage.jsx";
 import DataPage from "./components/DataPage/DataPage.jsx";
+import NamespaceDetailsPage from "./components/NamespaceDetailsPage.jsx";
 
 
 export const Context = createContext();
@@ -12,8 +13,6 @@ export const Context = createContext();
 
 function App()
 {
-
-
     const [shaclJson, setShaclJson] = useState(null);
 
     return (
@@ -26,6 +25,7 @@ function App()
                             <Routes>
                                 <Route path="/" element={<ShaclPage/>}/>
                                 <Route path="/namespaces" element={<NamespacesPage/>}/>
+                                <Route path="/namespace" element={<NamespaceDetailsPage/>}/>
                             </Routes>
                         </div>
                     </div>
@@ -35,8 +35,6 @@ function App()
                 </div>
             </BrowserRouter>
         </Context.Provider>
-
-
     );
 }
 
