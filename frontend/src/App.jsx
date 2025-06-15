@@ -15,9 +15,11 @@ function App()
 {
     const [shaclJson, setShaclJson] = useState(null);
     const [globalNamespaces, setGlobalNamespaces] = useState(null);
+    const [namespaceToShapes, setNamespaceToShapes] = useState({});
+    const [namespaceToPredicates, setNamespaceToPredicates] = useState({});
 
     return (
-        <Context.Provider value={{shaclJson, setShaclJson, globalNamespaces, setGlobalNamespaces}}>
+        <Context.Provider value={{shaclJson, setShaclJson, globalNamespaces, setGlobalNamespaces, namespaceToShapes, setNamespaceToShapes, namespaceToPredicates, setNamespaceToPredicates}}>
             <BrowserRouter>
                 <div className="app">
                     <div className="main-content">

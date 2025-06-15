@@ -27,6 +27,8 @@ public class NamespaceController {
     public ResponseEntity<NamespaceDetailDto> getPredefinedNamespace(
             @RequestParam("url") String url
     ) {
-        return ResponseEntity.ok(namespaceService.fetchNamespace(url));
+        NamespaceDetailDto body = namespaceService.fetchNamespace(url);
+       Integer statusCode = body == null ? 404 : 200;
+        return ResponseEntity.ok(body);
     }
 }
