@@ -6,7 +6,7 @@
   flex: 0 1 auto;
   width: 80%; /* this is fine */
   padding: 1rem;
-  font-size: clamp(1rem, 1.2vw, 2rem);
+  font-size: medium;
 }
 
 
@@ -40,18 +40,27 @@
   width: 100%;
 }
 
-.dataRow > div {
-  border: 1px solid gray;
-  text-align: center;
-  padding: 0.5rem;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.dataRow > div:hover {
-    background-color: #e0f7fa;
-}
-
 .dataRow.error {
     background-color: #ffe6e6;
 }
+
+.dataRow input {
+  border: 1px solid gray;
+  text-align: center;
+  padding: 0.1rem;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: medium;
+  font-family: inherit;
+  background-color: white;
+  outline: none;
+}
+
+.dataRow input:hover {
+  background-color: #e0f7fa;
+}
+
+.dataRow.error input {
+  background-color: #ffe6e6;
+}
+
