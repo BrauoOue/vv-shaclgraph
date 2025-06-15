@@ -1,35 +1,40 @@
 import './App.css'
 import Navbar from "./components/Navbar/Navbar.jsx";
-import ShaclPage from "./components/ShaclPage.jsx";
-import {useState} from "react";
+import ShaclPage from "./components/ShaclPage/ShaclPage.jsx";
+import {createContext, useState} from "react";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import NamespacesPage from "./components/NamespacesPage.jsx";
 import DataPage from "./components/DataPage/DataPage.jsx";
+
+
+export const Context = createContext();
+
 
 function App()
 {
 
 
-    const [isLoadedShacl, setIsLoadedShacl] = useState(false)
+    const [shaclJson, setShaclJson] = useState(null);
 
     return (
-        <BrowserRouter>
-
-            <div className="app">
-                <div className="main-content">
-                    <Navbar></Navbar>
-                    <div>
-                        <Routes>
-                            <Route path="/" element={<ShaclPage/>}/>
-                            <Route path="/namespaces" element={<NamespacesPage/>}/>
-                        </Routes>
+        <Context.Provider value={{shaclJson, setShaclJson}}>
+            <BrowserRouter>
+                <div className="app">
+                    <div className="main-content">
+                        <Navbar></Navbar>
+                        <div>
+                            <Routes>
+                                <Route path="/" element={<ShaclPage/>}/>
+                                <Route path="/namespaces" element={<NamespacesPage/>}/>
+                            </Routes>
+                        </div>
+                    </div>
+                    <div className="data-content">
+                        <DataPage></DataPage>
                     </div>
                 </div>
-                <div className="data-content">
-                    <DataPage></DataPage>
-                </div>
-            </div>
-        </BrowserRouter>
+            </BrowserRouter>
+        </Context.Provider>
 
 
     );

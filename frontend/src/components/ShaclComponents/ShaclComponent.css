@@ -1,0 +1,82 @@
+.shaclComponent {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    background-color: yellow;
+    flex: 0 1 auto;
+    width: 80%;
+    padding: 1rem;
+    font-size: clamp(1rem, 1.2vw, 2rem);
+}
+
+.shaclHeader
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    /*gap: 3px;*/
+    /*border: 1px solid gray;*/
+}
+
+
+.shaclHeader > div
+{
+    border: 1px solid gray;
+    text-align: center;
+    cursor: pointer;
+}
+
+.shaclHeader > div:last-child
+{
+    grid-column: 2/-1;
+}
+
+.shaclBody
+{
+    display: flex;
+    flex-direction: column;
+}
+
+.shaclRow
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    /*gap: 3px;*/
+    /*border: 1px solid gray;*/
+
+}
+
+.shaclRow > div
+{
+    border: 1px solid gray;
+    text-align: center;
+    cursor: pointer;
+
+}
+
+.shaclRow > div:hover
+{
+    background-color: #efef09;
+}
+
+.shaclRow > div:last-child
+{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.indented
+{
+    margin-left: 1.3rem;
+
+}
+
+.indented > div:first-child
+{
+    /*border-left: none;*/
+}
+
+.darkerBg
+{
+    background-color: #dada13;
+}
