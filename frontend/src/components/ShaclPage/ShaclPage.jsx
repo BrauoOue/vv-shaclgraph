@@ -8,7 +8,7 @@ import AddPredicatePopup from "../ShaclComponents/AddPredicatePopup.jsx";
 const ShaclPage = () =>
 {
     const [loading, setLoading] = useState(false);
-    const {shaclJson, setShaclJson} = useContext(Context)
+    const {shaclJson, setShaclJson, setGlobalNamespaces} = useContext(Context)
     const [addPredicatePopupShow, setAddPredicatePopupShow] = useState(false);
     const [nullablePredicates, setNullablePredicates] = useState([])
     const [editingShacleObj, setEditingShacleObj] = useState(null)
@@ -50,6 +50,7 @@ const ShaclPage = () =>
                 );
 
                 setShaclJson(response.data);
+                // setGlobalNamespaces();
             } catch (error)
             {
                 console.error("Upload error:", error);
