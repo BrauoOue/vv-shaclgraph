@@ -29,11 +29,11 @@ public class NamespaceServiceImpl implements NamespaceService {
             "http://www.w3.org/2002/07/owl#"
     );
 
-    private String resolveRedirects(String uri) throws IOException {
+    private String resolveRedirects(String uri, String acceptHeader) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) new URL(uri).openConnection();
         conn.setInstanceFollowRedirects(false);
-        conn.setRequestProperty("Accept",
-                "application/rdf+xml, text/turtle;q=0.9, application/n-triples;q=0.8");
+        conn.setRequestProperty("Accept", acceptHeader != null ? acceptHeader :
+                "application/rdf+xml, application/json, text/turtle;q=0.9, application/n-triples;q=0.8");
         int code = conn.getResponseCode();
         switch (code) {
             case HttpURLConnection.HTTP_MOVED_PERM:    // 301
@@ -43,10 +43,14 @@ public class NamespaceServiceImpl implements NamespaceService {
             case 308:                                  // HTTP_PERM_REDIRECT (not in HttpURLConnection)
                 String loc = conn.getHeaderField("Location");
                 if (loc == null) throw new IOException("Redirect with no Location header from " + uri);
-                return resolveRedirects(loc);
+                return resolveRedirects(loc, acceptHeader);
             default:
                 return uri;  // either 200 or some other non-redirect code
         }
+    }
+
+    private String resolveRedirects(String uri) throws IOException {
+        return resolveRedirects(uri, null);
     }
 
     @Override
@@ -59,8 +63,13 @@ public class NamespaceServiceImpl implements NamespaceService {
 
     @Override
     public NamespaceDetailDto fetchNamespace(String url) {
+        return fetchNamespace(url, null);
+    }
+
+    @Override
+    public NamespaceDetailDto fetchNamespace(String url, String acceptHeader) {
         try {
-            String finalUri = resolveRedirects(url);
+            String finalUri = resolveRedirects(url, acceptHeader);
             Model model = ModelFactory.createDefaultModel();
             RDFDataMgr.read(model, finalUri);
 

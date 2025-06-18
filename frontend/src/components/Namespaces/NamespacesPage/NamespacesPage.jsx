@@ -1,13 +1,13 @@
-import ClazzComponent from "./Namespaces/ClassComponent/ClazzComponent.jsx";
-import NamespaceUrlComponent from "./Namespaces/NamespaceUrlComponent/NamespaceUrlComponent.jsx";
+import ClazzComponent from "../ClassComponent/ClazzComponent.jsx";
+import NamespaceUrlComponent from "../NamespaceUrlComponent/NamespaceUrlComponent.jsx";
 import {CircularProgress, Button, Box} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import {useState, useEffect, useContext} from 'react';
-import { fetchPredefinedNamespaces} from "../repository/namespaceRepository.js";
-import { populateNamespaceMaps } from "../utils/namespaceUtils.js";
-import {Context} from "../App.jsx";
-import AddNamespaceDialog from "./Namespaces/AddNamespaceDialog.jsx";
-import "./Namespaces/NamespacesPage.css";
+import { fetchPredefinedNamespaces} from "../../../repository/namespaceRepository.js";
+import { populateNamespaceMaps } from "../../../utils/namespaceUtils.js";
+import {Context} from "../../../App.jsx";
+import AddNamespaceDialog from "../AddNamespaceDialog.jsx";
+import "./NamespacesPage.css";
 
 const NamespacesPage = () =>
 {
@@ -54,17 +54,6 @@ const NamespacesPage = () =>
 
     return (
         <div className="namespaces-container">
-            <div className="namespaces-header">
-                <h2>Namespaces</h2>
-                <Button 
-                    variant="contained" 
-                    startIcon={<AddIcon />}
-                    onClick={() => setOpenAddDialog(true)}
-                >
-                    Add Namespace
-                </Button>
-            </div>
-
             {loading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
                     <CircularProgress/>
@@ -83,6 +72,14 @@ const NamespacesPage = () =>
                     <div>No namespaces available</div>
                 </Box>
             )}
+
+            <Button className={"add-namespace-button"}
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => setOpenAddDialog(true)}
+            >
+                Add Namespace
+            </Button>
 
             <AddNamespaceDialog 
                 open={openAddDialog} 
