@@ -13,13 +13,14 @@ export const Context = createContext({});
 
 function App()
 {
+    const [dataJson, setDataJson] = useState(null);
     const [shaclJson, setShaclJson] = useState(null);
     const [globalNamespaces, setGlobalNamespaces] = useState(null);
     const [namespaceToShapes, setNamespaceToShapes] = useState({});
     const [namespaceToPredicates, setNamespaceToPredicates] = useState({});
 
     return (
-        <Context.Provider value={{shaclJson, setShaclJson, globalNamespaces, setGlobalNamespaces, namespaceToShapes, setNamespaceToShapes, namespaceToPredicates, setNamespaceToPredicates}}>
+        <Context.Provider value={{dataJson, setDataJson, shaclJson, setShaclJson, globalNamespaces, setGlobalNamespaces, namespaceToShapes, setNamespaceToShapes, namespaceToPredicates, setNamespaceToPredicates}}>
             <BrowserRouter>
                 <div className="app">
                     <div className="main-content">
