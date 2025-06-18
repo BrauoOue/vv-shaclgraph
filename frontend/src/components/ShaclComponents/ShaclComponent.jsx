@@ -3,16 +3,9 @@ import ShaclRow from "./ShaclRow";
 import ShaclProperties from "./ShaclProperties";
 import {getType, getNullablePredicates} from "../utils";
 import "./ShaclComponent.css"
-import {useEffect, useState} from "react";
-import AddPredicatePopup from "./AddPredicatePopup.jsx";
 
-const ShaclComponent = ({shaclObj, addPredicatePopupShow, setAddPredicatePopupShow, nullablePredicates, setNullablePredicates}) =>
+const ShaclComponent = ({shaclObj, addPredicatePopupShow, setAddPredicatePopupShow, setEditingShacleObj, shaclObjIndex, setEditingShacleObjIndex}) =>
 {
-
-    useEffect(() =>
-    {
-        console.log(nullablePredicates)
-    }, [nullablePredicates]);
 
     return (
         <div className="shaclComponent">
@@ -36,7 +29,7 @@ const ShaclComponent = ({shaclObj, addPredicatePopupShow, setAddPredicatePopupSh
                             key={predicate}
                             propertyNs="sh:"
                             property={predicate}
-                            objectNs={type === "string" ? "&nbsp;" : `${predicateValue.nsPrefix}:`}
+                            objectNs={type === "string" ? "" : `${predicateValue.nsPrefix}:`}
                             object={type === "string" ? `'${predicateValue}'` : predicateValue.resource}
                             darkerObjectNs={type === "string"}
                             tooltip={type === "string" ? predicateValue : undefined}
@@ -48,9 +41,10 @@ const ShaclComponent = ({shaclObj, addPredicatePopupShow, setAddPredicatePopupSh
                 <button onClick={()=>
                 {
                     console.log("Clicked")
-                    setNullablePredicates(getNullablePredicates(shaclObj))
-                    setAddPredicatePopupShow(!addPredicatePopupShow)}
-                }>Add</button>
+                    setAddPredicatePopupShow(!addPredicatePopupShow)
+                    setEditingShacleObj(shaclObj)
+                    setEditingShacleObjIndex(shaclObjIndex)
+                }}>Add</button>
             </div>
         </div>
     );

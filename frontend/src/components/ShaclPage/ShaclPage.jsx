@@ -3,15 +3,17 @@ import axios from 'axios';
 import "./ShaclPage.css"
 import ShaclComponent from "../ShaclComponents/ShaclComponent.jsx";
 import {Context} from "../../App.jsx";
-import AddPredicatePopup from "../ShaclComponents/AddPredicatePopup.jsx";
+import AddPredicatePopup from "../AddPredicatePopup/AddPredicatePopup.jsx";
+import AddShapePopup from "../AddShapePopup/AddShapePopup.jsx";
 
 const ShaclPage = () =>
 {
     const [loading, setLoading] = useState(false);
     const {shaclJson, setShaclJson} = useContext(Context)
-    const [addPredicatePopupShow, setAddPredicatePopupShow] = useState(false);
-    const [nullablePredicates, setNullablePredicates] = useState([])
+    const [showAddPredicatePopup, setShowAddPredicatePopup] = useState(false);
+    const [showAddShaclShapePopup, setShowAddShaclShapePopup] = useState(false)
     const [editingShacleObj, setEditingShacleObj] = useState(null)
+    const [editingShacleObjIndex, setEditingShacleObjIndex] = useState(null)
 
 
     useEffect(() =>
@@ -73,6 +75,8 @@ const ShaclPage = () =>
                         type="file"
                         accept=".ttl"
                         onChange={handleFileUpload}/>
+                    <button onClick={()=>setShowAddShaclShapePopup(!showAddShaclShapePopup)}
+                    >Add Shacl Shape</button>
                 </div>
             )}
 
@@ -82,27 +86,38 @@ const ShaclPage = () =>
 
             {shaclJson && (
 
-                shaclJson.shapeConstrains.map(shaclObj => (
+                shaclJson.shapeConstrains.map((shaclObj, shacleObjIndex) => (
                     <ShaclComponent
                         key={shaclObj.shapeName.resource}
                         shaclObj={shaclObj}
-                        addPredicatePopupShow={addPredicatePopupShow}
-                        setAddPredicatePopupShow={setAddPredicatePopupShow}
-                        nullablePredicates={nullablePredicates}
-                        setNullablePredicates={setNullablePredicates}
+                        shaclObjIndex={shacleObjIndex}
+                        addPredicatePopupShow={showAddPredicatePopup}
+                        setAddPredicatePopupShow={setShowAddPredicatePopup}
                         setEditingShacleObj={setEditingShacleObj}
+                        setEditingShacleObjIndex={setEditingShacleObjIndex}
                     >
                     </ShaclComponent>
                 ))
 
             )}
-            {addPredicatePopupShow && (
+            {showAddPredicatePopup && (
                 <AddPredicatePopup
-                    setAddPredicatePopupShow={setAddPredicatePopupShow}
-                    nullablePredicates={nullablePredicates}
-                    se
+                    setAddPredicatePopupShow={setShowAddPredicatePopup}
+                    editingShacleObj={editingShacleObj}
+                    editingShacleObjIndex = {editingShacleObjIndex}
+                    shaclJson = {shaclJson}
+                    setShaclJson={setShaclJson}
                 />
             )}
+            {
+                showAddShaclShapePopup && (
+                    <AddShapePopup
+                        setShowAddShaclShapePopup={setShowAddShaclShapePopup}
+                        shaclJson={shaclJson}
+                        setShaclJson={setShaclJson}
+                    />
+                )
+            }
         </div>
     );
 };
