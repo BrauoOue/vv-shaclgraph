@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import "./NamespaceUrlComponent.css"
-import {useNavigate} from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
+import { Context } from "../../../App.jsx";
 
 const NamespaceUrlComponent = ({ns}) => {
     const navigate = useNavigate();
+    const { setActiveNamespacePrefix } = useContext(Context);
 
     const handleClick = () => {
+        setActiveNamespacePrefix(ns.nsPrefix);
         navigate('/namespace', {state: {ns}});
     };
 
