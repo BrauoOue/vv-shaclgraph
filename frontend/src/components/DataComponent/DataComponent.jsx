@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import "./DataComponent.css";
-// import "./DataPage.css"
 
 const DataComponent = ({ subjectData }) => {
   const [localData, setLocalData] = useState(subjectData);
@@ -31,21 +30,25 @@ const DataComponent = ({ subjectData }) => {
               className="propertyNs"
               value={triplet.predicateNsPrefix}
               onChange={(e) => handleChange(e, idx, 'predicateNsPrefix')}
+              data-error={triplet.errorMsg || ''}
             />
             <input
               className="property"
               value={triplet.predicate}
               onChange={(e) => handleChange(e, idx, 'predicate')}
+              data-error={triplet.errorMsg || ''}
             />
             <input
               className="objectNs"
               value={triplet.objectNsPrefix || ''}
               onChange={(e) => handleChange(e, idx, 'objectNsPrefix')}
+              data-error={triplet.errorMsg || ''}
             />
             <input
               className="object"
               value={triplet.object}
               onChange={(e) => handleChange(e, idx, 'object')}
+              data-error={triplet.errorMsg || ''}
             />
           </div>
         ))}

@@ -16,11 +16,17 @@ import "./DataPage.css";
 const DataPage = () => {
   // const { shaclJson } = useContext(Context); 
   const [dataFile, setDataFile] = useState(null);
-  const [dataJson, setDataJson] = useState(null);
+  // const [dataJson, setDataJson] = useState(null);
+  const {
+    dataJson,
+    setDataJson,
+    shaclJson,
+    globalNamespaces,
+    setGlobalNamespaces
+  } = useContext(Context);
   const [loading, setLoading] = useState(false);
-  
-  const { globalNamespaces, setGlobalNamespaces } = useContext(Context);
   // const [validationResult, setValidationResult] = useState(null);
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -60,6 +66,100 @@ const DataPage = () => {
 
   const dataToDisplay = dataJson?.data || [];
 
+
+function getLocalName(iri) {
+  if (!iri) return iri;
+  const hashIndex = iri.lastIndexOf('#');
+  const slashIndex = iri.lastIndexOf('/');
+  const pos = Math.max(hashIndex, slashIndex);
+  return pos === -1 ? iri : iri.substring(pos + 1);
+}
+
+function mergeValidationErrors(dataJson, validationErrors) {
+  if (!validationErrors || validationErrors.length === 0) return {
+    ...dataJson,
+    valid: true 
+  };
+
+  let hasErrors = false;
+
+  const updatedData = dataJson.data.map(subject => {
+    const subjectLocal = subject.subject;
+    const subjectErrors = validationErrors.filter(e => getLocalName(e.subject) === subjectLocal);
+    const hasSubjectError = subjectErrors.length > 0;
+
+    if (hasSubjectError) hasErrors = true;
+
+    const updatedTriplets = subject.triplets.map(triplet => {
+      const tripletLocal = triplet.predicate;
+      const errorObj = subjectErrors.find(e => getLocalName(e.property) === tripletLocal);
+      if (errorObj) {
+        return {
+          ...triplet,
+          error: true,
+          errorMsg: errorObj.errorMessage,
+        };
+      }
+      return {
+        ...triplet,
+        error: false,
+        errorMsg: null,
+      };
+    });
+
+    return {
+      ...subject,
+      error: hasSubjectError,
+      errorMsg: hasSubjectError ? "Has validation errors" : null,
+      triplets: updatedTriplets,
+    };
+  });
+
+  return {
+    ...dataJson,
+    valid: !hasErrors, 
+    data: updatedData,
+  };
+}
+
+
+ const handleValidate = async () => {
+  if (!shaclJson || !dataJson) {
+    alert("Both SHACL and RDF data must be loaded.");
+    return;
+  }
+
+  const requestBody = {
+    shacl: shaclJson,
+    data: dataJson
+  };
+
+  try {
+    const response = await fetch("http://localhost:9090/api/validate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      throw new Error("Validation failed");
+    }
+
+    const validationResult = await response.json();
+
+    const enrichedDataJson = mergeValidationErrors(dataJson, validationResult.validationErrors);
+    console.log(enrichedDataJson);
+    setDataJson(enrichedDataJson);
+
+  } catch (error) {
+    console.error("Validation error:", error);
+    alert("Validation failed. Check the console.");
+  }
+};
+
+
   return (
     <div className="data-page">
       <h1>Data</h1>
@@ -82,7 +182,7 @@ const DataPage = () => {
           <DataComponent key={index} subjectData={subjectData} />
         ))}
       </div>
-      <button className='myButton'>Validate</button>
+      <button className='myButton' onClick={handleValidate}>Validate</button>
     </div>
 
   );
