@@ -106,18 +106,29 @@ const ShaclPage = () =>
             )}
 
             {shaclJson && (
-                shaclJson.shapeConstrains.map((shaclObj, shacleObjIndex) => (
-                    <ShaclComponent
-                        key={shaclObj.shapeName.resource}
-                        shaclObj={shaclObj}
-                        shaclObjIndex={shacleObjIndex}
-                        addPredicatePopupShow={showAddPredicatePopup}
-                        setAddPredicatePopupShow={setShowAddPredicatePopup}
-                        setEditingShacleObj={setEditingShacleObj}
-                        setEditingShacleObjIndex={setEditingShacleObjIndex}
-                    >
-                    </ShaclComponent>
-                ))
+                <>
+                    <div>
+                        <h1>Upload a new ttl file</h1>
+                        <input
+                            type="file"
+                            accept=".ttl"
+                            onChange={handleFileUpload}/>
+
+                    </div>
+                    {shaclJson.shapeConstrains.map((shaclObj, shacleObjIndex) => (
+                        <ShaclComponent
+                            key={shaclObj.shapeName.resource}
+                            shaclObj={shaclObj}
+                            shaclObjIndex={shacleObjIndex}
+                            addPredicatePopupShow={showAddPredicatePopup}
+                            setAddPredicatePopupShow={setShowAddPredicatePopup}
+                            setEditingShacleObj={setEditingShacleObj}
+                            setEditingShacleObjIndex={setEditingShacleObjIndex}
+                        >
+                        </ShaclComponent>
+                    ))}
+                </>
+
 
             )}
             {showAddPredicatePopup && (
