@@ -5,13 +5,23 @@ import ShaclComponent from "../ShaclComponents/ShaclComponent.jsx";
 import {Context} from "../../App.jsx";
 import AddPredicatePopup from "../AddPredicatePopup/AddPredicatePopup.jsx";
 import AddShapePopup from "../AddShapePopup/AddShapePopup.jsx";
+import { updateGlobalNamespaces } from "../../utils/namespaceUtils.js";
+import { fetchNamespaceByUrl } from "../../repository/namespaceRepository.js";
+import AddPredicatePopup from "../ShaclComponents/AddPredicatePopup.jsx";
 
 const ShaclPage = () =>
 {
     const [loading, setLoading] = useState(false);
-    const {shaclJson, setShaclJson} = useContext(Context)
     const [showAddPredicatePopup, setShowAddPredicatePopup] = useState(false);
     const [showAddShaclShapePopup, setShowAddShaclShapePopup] = useState(false)
+    const {
+        shaclJson, 
+        setShaclJson, 
+        globalNamespaces, 
+        setGlobalNamespaces, 
+        setNamespaceToShapes, 
+        setNamespaceToPredicates
+    } = useContext(Context)
     const [editingShacleObj, setEditingShacleObj] = useState(null)
     const [editingShacleObjIndex, setEditingShacleObjIndex] = useState(null)
 
@@ -52,6 +62,14 @@ const ShaclPage = () =>
                 );
 
                 setShaclJson(response.data);
+                // Fetch and append each namespace to globalNamespaces and populate maps
+                await updateGlobalNamespaces(
+                    response.data,
+                    globalNamespaces,
+                    setGlobalNamespaces,
+                    setNamespaceToShapes,
+                    setNamespaceToPredicates
+                );
             } catch (error)
             {
                 console.error("Upload error:", error);

@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -7,12 +6,21 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
+import { Context } from '../../App.jsx';
+import { updateGlobalNamespaces } from '../../utils/namespaceUtils.js';
+
 import DataComponent from '../DataComponent/DataComponent';
+import "./DataPage.css";
+// import { Context } from 'C:/Users/Asus/Desktop/vp-shacl/vv-shaclgraph/frontend/src/App.jsx'; 
 
 const DataPage = () => {
+  // const { shaclJson } = useContext(Context); 
   const [dataFile, setDataFile] = useState(null);
   const [dataJson, setDataJson] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  const { globalNamespaces, setGlobalNamespaces } = useContext(Context);
+  // const [validationResult, setValidationResult] = useState(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -42,6 +50,7 @@ const DataPage = () => {
 
       const jsonData = await response.json();
       setDataJson(jsonData);
+      await updateGlobalNamespaces(jsonData,globalNamespaces,setGlobalNamespaces);
     } catch (err) {
       alert('Error uploading file: ' + err.message);
     } finally {
@@ -52,39 +61,30 @@ const DataPage = () => {
   const dataToDisplay = dataJson?.data || [];
 
   return (
-    <Box mt={4} display="flex" flexDirection="column" alignItems="center">
-      <Typography variant="h4" gutterBottom>Data</Typography>
+    <div className="data-page">
+      <h1>Data</h1>
 
       {!dataJson && (
-        <>
+        <div className="upload-section">
           <input type="file" accept=".ttl" onChange={handleFileChange} />
           <button onClick={uploadFile} disabled={!dataFile || loading}>
             {loading ? 'Uploading...' : 'Upload & Convert'}
           </button>
-        </>
+        </div>
       )}
 
       {dataJson && dataToDisplay.length === 0 && (
-        <Typography>No data found in the uploaded file.</Typography>
+        <p>No data found in the uploaded file.</p>
       )}
 
-      {dataToDisplay.map((subjectData, index) => (
-        <Paper key={index} sx={{ width: '80%', mb: 4 }} elevation={4}>
-          <Table>
-            <TableBody>
-              <TableRow sx={{ backgroundColor: '#e0e0e0' }}>
-                <TableCell>{subjectData.subjectNsPrefix}</TableCell>
-                <TableCell colSpan={3}>{subjectData.subject}</TableCell>
-              </TableRow>
+      <div className="data-list">
+        {dataToDisplay.map((subjectData, index) => (
+          <DataComponent key={index} subjectData={subjectData} />
+        ))}
+      </div>
+      <button className='myButton'>Validate</button>
+    </div>
 
-              {subjectData.triplets.map((triplet, idx) => (
-                <DataComponent key={idx} triplet={triplet} />
-              ))}
-            </TableBody>
-          </Table>
-        </Paper>
-      ))}
-    </Box>
   );
 };
 
