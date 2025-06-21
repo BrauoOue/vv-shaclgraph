@@ -67,6 +67,10 @@ const ShaclPage = () =>
 
     return (
         <div className={shaclJson ? 'shaclLoadedPage' : 'shaclImportPage'}>
+            <button
+                onClick={() => setShowAddShaclShapePopup(!showAddShaclShapePopup)}
+            >Add Shacl Shape
+            </button>
 
             {!shaclJson && !loading && (
                 <div>
@@ -75,8 +79,7 @@ const ShaclPage = () =>
                         type="file"
                         accept=".ttl"
                         onChange={handleFileUpload}/>
-                    <button onClick={()=>setShowAddShaclShapePopup(!showAddShaclShapePopup)}
-                    >Add Shacl Shape</button>
+
                 </div>
             )}
 
@@ -85,7 +88,6 @@ const ShaclPage = () =>
             )}
 
             {shaclJson && (
-
                 shaclJson.shapeConstrains.map((shaclObj, shacleObjIndex) => (
                     <ShaclComponent
                         key={shaclObj.shapeName.resource}
@@ -104,20 +106,18 @@ const ShaclPage = () =>
                 <AddPredicatePopup
                     setAddPredicatePopupShow={setShowAddPredicatePopup}
                     editingShacleObj={editingShacleObj}
-                    editingShacleObjIndex = {editingShacleObjIndex}
-                    shaclJson = {shaclJson}
+                    editingShacleObjIndex={editingShacleObjIndex}
+                    shaclJson={shaclJson}
                     setShaclJson={setShaclJson}
                 />
             )}
-            {
-                showAddShaclShapePopup && (
-                    <AddShapePopup
-                        setShowAddShaclShapePopup={setShowAddShaclShapePopup}
-                        shaclJson={shaclJson}
-                        setShaclJson={setShaclJson}
-                    />
-                )
-            }
+            {showAddShaclShapePopup && (
+                <AddShapePopup
+                    setShowAddShaclShapePopup={setShowAddShaclShapePopup}
+                    shaclJson={shaclJson}
+                    setShaclJson={setShaclJson}
+                />
+            )}
         </div>
     );
 };

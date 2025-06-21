@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {createEmptyShaclShape, createEmptyRdfObj, getNamespaceMap} from "../utils.js"
 import ShaclSelector from "../AddPredicatePopup/ShaclSelector.jsx";
 import "./AddShapePopup.css"
@@ -14,7 +14,17 @@ const AddShapePopup = ({shaclJson, setShaclJson, setShowAddShaclShapePopup}) =>
     const [shapeNsPrefix, setShapeNsPrefix] = useState("")
     const [shapeName, setShapeName] = useState("")
 
-    const [targetClass, setTargetClass] = useState(createEmptyRdfObj({nsPrefix: Object.keys(nameSpaceShapeMap)[0]}))
+    const [targetClass, setTargetClass] = useState(createEmptyRdfObj({nsPrefix: Object.keys(nameSpaceShapeMap)[0]}));
+
+    useEffect(() =>
+    {
+
+    }, []);
+    const [isShapeInNewNs, setIsShapeInNewNs] = useState(false);
+    const [newNamespace, setNewNamespace] = useState({
+        url: "",
+        prefix: ""
+    })
 
     const [newShacleObj, setNewShacleObj] = useState({
         shapeName: {
@@ -31,10 +41,24 @@ const AddShapePopup = ({shaclJson, setShaclJson, setShowAddShaclShapePopup}) =>
 
     const handleAdd = () =>
     {
-        console.log(shaclJson.namespaces)
-        const namespaceMap = getNamespaceMap(shaclJson.namespaces)
-        console.log(namespaceMap)
-        return;
+        if (shaclJson === null)
+        {
+            shaclJson = {
+                namespaces: [],
+                shapeConstrains: []
+            }
+        }
+        let allNamespaces = shaclJson.namespaces;
+        if(isShapeInNewNs)
+        {
+            allNamespaces = [...shaclJson.namespaces, newNamespace]
+            setShaclJson({
+                ...shaclJson,
+                namespaces: allNamespaces
+            })
+        }
+
+        const namespaceMap = getNamespaceMap(allNamespaces)
         const newShaclObj = createEmptyShaclShape(createEmptyRdfObj({
                 namespace: namespaceMap[shapeNsPrefix],
                 nsPrefix: shapeNsPrefix,
@@ -51,11 +75,9 @@ const AddShapePopup = ({shaclJson, setShaclJson, setShowAddShaclShapePopup}) =>
                 shapeConstrains: [...(shaclJson.shapeConstrains || []), newShaclObj],
             }
         )
+        setShowAddShaclShapePopup(false)
 
     }
-
-    //TODO: implement this later
-    const [useNewNamespace, setUseNewNamespace] = useState(false)
 
     return (
         <div className={"addShapePopup"}>
@@ -63,7 +85,19 @@ const AddShapePopup = ({shaclJson, setShaclJson, setShowAddShaclShapePopup}) =>
             <div>
                 <select onChange={(e) =>
                 {
-                    setShapeNsPrefix(e.target.value)
+                    const value = e.target.value;
+
+                    if (value === 'new')
+                    {
+                        setIsShapeInNewNs(true)
+                        setTargetClass({
+                            ...targetClass,
+                            nsPrefix: ""
+                        })
+                        return
+                    }
+                    setShapeNsPrefix(value)
+
                 }}
                 >
                     <option value={""}>--Select Namespace</option>
@@ -71,35 +105,86 @@ const AddShapePopup = ({shaclJson, setShaclJson, setShowAddShaclShapePopup}) =>
                         <option key={item} value={item}
                         >{item}</option>
                     ))}
+                    <option value={"new"}>New Namespace</option>
                 </select>
+                {isShapeInNewNs && (
+                    <>
+                        <div>
+                            <label>Prefix:</label>
+                            <input
+                                value={newNamespace.prefix}
+                                onChange={(e) =>
+                                {
+                                    setNewNamespace((old) => ({
+                                        ...old,
+                                        prefix: e.target.value
+                                    }))
+                                    setTargetClass({
+                                        ...targetClass,
+                                        nsPrefix: e.target.value
+                                    })
+                                    setShapeNsPrefix(e.target.value)
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <label>Namespace URL:</label>
+                            <input
+                                value={newNamespace.url}
+                                onChange={(e) => setNewNamespace((old) => ({
+                                    ...old,
+                                    url: e.target.value
+                                }))}
+                            />
+                        </div>
+
+                    </>
+
+                )}
                 <input
                     value={shapeName}
                     onChange={(e) => setShapeName(e.target.value)}
                 />
             </div>
-            <div>
-                <label>targetClass</label>
-                <ShaclSelector selectedNs={targetClass.nsPrefix}
-                               setSelectedNs={(newValue) =>
-                               {
-                                   setTargetClass(((oldObject) => ({
-                                       ...oldObject,
-                                       nsPrefix: newValue,
-                                       resource: ""
-                                   })))
-                               }}
-                               selectedResource={targetClass.resource}
-                               setSelectedResource={(newValue) =>
-                               {
-                                   setTargetClass(((oldObject) => ({
-                                       ...oldObject,
-                                       resource: newValue
-                                   })))
-                               }}
-                               namespaceMap={nameSpaceShapeMap}
+            {isShapeInNewNs && (
+                <div>
+                    <label>targetClass</label>
+                    <span> {targetClass.nsPrefix}:</span>
+                    <input
+                        value={targetClass.resource}
+                        onChange={(e) =>setTargetClass({
+                            ...targetClass,
+                            resource: e.target.value
+                        })}
+                    />
+                </div>
+            )}
+            {!isShapeInNewNs && (
+                <div>
+                    <label>targetClass</label>
+                    <ShaclSelector selectedNs={targetClass.nsPrefix}
+                                   setSelectedNs={(newValue) =>
+                                   {
+                                       setTargetClass(((oldObject) => ({
+                                           ...oldObject,
+                                           nsPrefix: newValue,
+                                           resource: ""
+                                       })))
+                                   }}
+                                   selectedResource={targetClass.resource}
+                                   setSelectedResource={(newValue) =>
+                                   {
+                                       setTargetClass(((oldObject) => ({
+                                           ...oldObject,
+                                           resource: newValue
+                                       })))
+                                   }}
+                                   namespaceMap={nameSpaceShapeMap}
 
-                />
-            </div>
+                    />
+                </div>
+            )}
+
             <button onClick={handleAdd}>
                 Add
             </button>
