@@ -7,4 +7,5 @@ import java.util.List;
 public interface NamespaceService {
     List<NamespaceDetailDto> fetchAllNamespaces();
     NamespaceDetailDto fetchNamespace(String url);
+    NamespaceDetailDto fetchNamespace(String url, String acceptHeader);
 }

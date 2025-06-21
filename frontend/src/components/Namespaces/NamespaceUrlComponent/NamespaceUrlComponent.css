@@ -1,21 +1,52 @@
-.namespaceUrlComponent{
+.namespaceUrlComponent {
     display: flex;
-    gap: 0.4rem;
-}
-.namespaceUrlComponent > * {
-    border: 1px solid black;
-    padding-inline: 1rem;
-    text-align: center;
-    overflow-x: auto;
-    white-space: nowrap;
-}
-.namespaceUrlComponent > *:first-child{
-    width: 70px;
-}
-.namespaceUrlComponent > *:last-child{
-    width: 200px;
-    cursor: pointer;
+    gap: 0.6rem;
+    justify-content: center;
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    background-color: #f8f9fa;
 }
 
+.namespaceUrlComponent:hover {
+    background-color: #e9ecef;
+    transform: translateX(2px);
+}
+
+.namespaceUrlComponent > * {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 0.7rem 1rem;
+    text-align: left;
+    overflow-x: auto;
+    white-space: nowrap;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #495057;
+}
+
+.namespaceUrlComponent > *:first-child {
+    width: 90px;
+    font-weight: 600;
+    background-color: #e9ecef;
+}
+
+.namespaceUrlComponent > *:last-child {
+    width: 300px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: monospace;
+}
+
+.namespaceUrlComponent > *:last-child:hover {
+    background-color: #f1f3f5;
+    border-color: #adb5bd;
+}
+
+.add-namespace-button {
+    width: 200px;
+}
 
 

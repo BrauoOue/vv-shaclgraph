@@ -25,8 +25,10 @@ public class NamespaceController {
 
     @GetMapping(value = "/predefined/by", params = "url")
     public ResponseEntity<NamespaceDetailDto> getPredefinedNamespace(
-            @RequestParam("url") String url
+            @RequestParam("url") String url,
+            @RequestHeader(value = "Accept", required = false) String acceptHeader
     ) {
-        return ResponseEntity.ok(namespaceService.fetchNamespace(url));
+        NamespaceDetailDto body = namespaceService.fetchNamespace(url, acceptHeader);
+        return ResponseEntity.ok(body);
     }
 }
