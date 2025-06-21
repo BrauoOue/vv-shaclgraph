@@ -1,0 +1,9 @@
+.addShapePopup {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    width: 90%;
+    height: 60vh;
+    transform: translate(-50%, 0);
+    background-color: cornflowerblue;
+}

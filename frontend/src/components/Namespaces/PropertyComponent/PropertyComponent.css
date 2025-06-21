@@ -1,20 +1,73 @@
-.propertyComponent{
-    background-color: green;
+.propertyComponent {
+    background-color: #f1f8e9;
+    border-radius: 6px;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
 }
-.propertyHeader,.classRow{
+
+.propertyComponent:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #e8f5e9;
+    transform: translateX(2px);
+}
+
+.propertyHeader, .classRow {
     display: flex;
-    gap: 0.1rem;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
 }
-.classBody{
+
+.classBody {
     margin-left: 1rem;
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid #4caf50;
 }
-.classRow > * , .propertyHeader>* , .classHeader> *{
-    text-align: center;
+
+.classRow > *, .propertyHeader > *, .classHeader > * {
+    text-align: left;
     overflow-x: auto;
     white-space: nowrap;
-    border: 1px solid black;
+    border: 1px solid #c5e1a5;
+    border-radius: 4px;
+    padding: 0.5rem;
+    background-color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    color: #33691e;
+    width: 120px;
+    min-height: 40px;
+    font-family: system-ui, -apple-system, sans-serif;
+    display: block;
+}
+
+/* Specific widths for certain elements if needed */
+.subjectNs, .propertyNs, .objectNs {
     width: 100px;
 }
+
+.subject, .property, .object {
+    width: 150px;
+}
+
 ::-webkit-scrollbar {
-    display: none;
+    height: 4px;
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c5c5c5;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
