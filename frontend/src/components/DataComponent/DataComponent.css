@@ -64,3 +64,21 @@
   background-color: #ffe6e6;
 }
 
+.error-row input {
+  border: 2px solid red;
+}
+
+.error-row input:hover::after {
+  content: attr(data-error);
+  position: absolute;
+  background: #f8d7da;
+  color: #721c24;
+  padding: 4px 8px;
+  border: 1px solid red;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 10;
+  font-size: 12px;
+}
+
+
