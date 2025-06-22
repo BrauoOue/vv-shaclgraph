@@ -9,8 +9,7 @@
     font-size: clamp(1rem, 1.2vw, 2rem);
 }
 
-.shaclHeader
-{
+.shaclHeader {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     /*gap: 3px;*/
@@ -18,65 +17,63 @@
 }
 
 
-.shaclHeader > div
-{
+.shaclHeader > div {
     border: 1px solid gray;
     text-align: center;
     cursor: pointer;
 }
 
-.shaclHeader > div:last-child
-{
+.shaclHeader > div:last-child {
     grid-column: 2/-1;
 }
 
-.shaclBody
-{
+.shaclBody {
     display: flex;
     flex-direction: column;
 }
 
-.shaclRow
-{
+.shaclRow {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    /*gap: 3px;*/
-    /*border: 1px solid gray;*/
-
 }
 
-.shaclRow > div
-{
+.shaclRow > div {
     border: 1px solid gray;
     text-align: center;
     cursor: pointer;
 
 }
 
-.shaclRow > div:hover
-{
-    background-color: #efef09;
+.shaclRow > div:hover {
+    /*background-color: #efef09;*/
 }
 
-.shaclRow > div:last-child
-{
+.shaclRow > div:last-child {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.indented
-{
+.indented {
     margin-left: 1.3rem;
 
 }
 
-.indented > div:first-child
-{
+.indented > div:first-child {
     /*border-left: none;*/
 }
 
-.darkerBg
-{
+.darkerBg {
     background-color: #dada13;
 }
+
+/* Editable rows styling */
+.shaclRow.editable {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.shaclRow.editable:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+

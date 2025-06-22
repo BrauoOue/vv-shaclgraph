@@ -5,9 +5,8 @@ import ShaclComponent from "../ShaclComponents/ShaclComponent.jsx";
 import {Context} from "../../App.jsx";
 import AddPredicatePopup from "../AddPredicatePopup/AddPredicatePopup.jsx";
 import AddShapePopup from "../AddShapePopup/AddShapePopup.jsx";
-import { updateGlobalNamespaces } from "../../utils/namespaceUtils.js";
-import { fetchNamespaceByUrl } from "../../repository/namespaceRepository.js";
-import AddPredicatePopup from "../ShaclComponents/AddPredicatePopup.jsx";
+import {updateGlobalNamespaces} from "../../utils/namespaceUtils.js";
+import {fetchNamespaceByUrl} from "../../repository/namespaceRepository.js";
 
 const ShaclPage = () =>
 {
@@ -15,21 +14,29 @@ const ShaclPage = () =>
     const [showAddPredicatePopup, setShowAddPredicatePopup] = useState(false);
     const [showAddShaclShapePopup, setShowAddShaclShapePopup] = useState(false)
     const {
-        shaclJson, 
-        setShaclJson, 
-        globalNamespaces, 
-        setGlobalNamespaces, 
-        setNamespaceToShapes, 
-        setNamespaceToPredicates
+        shaclJson,
+        setShaclJson,
+        globalNamespaces,
+        setGlobalNamespaces,
+        setNamespaceToShapes,
+        setNamespaceToPredicates,
+        namespaceToShapes,
+        namespaceToPredicates,
     } = useContext(Context)
     const [editingShacleObj, setEditingShacleObj] = useState(null)
     const [editingShacleObjIndex, setEditingShacleObjIndex] = useState(null)
-
 
     useEffect(() =>
     {
         console.log(shaclJson)
     }, [shaclJson]);
+
+    useEffect(() =>
+    {
+        console.log("Global namespaces:", globalNamespaces)
+        console.log("Namespace to Shape", namespaceToShapes)
+        console.log("Namespace to Predicates", namespaceToPredicates)
+    }, [globalNamespaces]);
 
     const handleFileUpload = async (event) =>
     {
@@ -39,7 +46,6 @@ const ShaclPage = () =>
             alert("Please upload a valid .ttl file.");
             return;
         }
-
 
         const reader = new FileReader();
         reader.onload = async (e) =>
@@ -70,11 +76,13 @@ const ShaclPage = () =>
                     setNamespaceToShapes,
                     setNamespaceToPredicates
                 );
-            } catch (error)
+            }
+            catch (error)
             {
                 console.error("Upload error:", error);
                 alert("Failed to process the SHACL file.");
-            } finally
+            }
+            finally
             {
                 setLoading(false);
             }
@@ -84,53 +92,100 @@ const ShaclPage = () =>
     };
 
     return (
-        <div className={shaclJson ? 'shaclLoadedPage' : 'shaclImportPage'}>
-            <button
-                onClick={() => setShowAddShaclShapePopup(!showAddShaclShapePopup)}
-            >Add Shacl Shape
-            </button>
+        <div className='shaclLoadedPage'>
+
 
             {!shaclJson && !loading && (
-                <div>
-                    <h1>Please upload a Shacl (.ttl) file</h1>
-                    <input
-                        type="file"
-                        accept=".ttl"
-                        onChange={handleFileUpload}/>
-
-                </div>
-            )}
-
-            {loading && (
-                <h1>Processing SHACL file...</h1>
-            )}
-
-            {shaclJson && (
                 <>
-                    <div>
-                        <h1>Upload a new ttl file</h1>
-                        <input
-                            type="file"
-                            accept=".ttl"
-                            onChange={handleFileUpload}/>
 
-                    </div>
-                    {shaclJson.shapeConstrains.map((shaclObj, shacleObjIndex) => (
-                        <ShaclComponent
-                            key={shaclObj.shapeName.resource}
-                            shaclObj={shaclObj}
-                            shaclObjIndex={shacleObjIndex}
-                            addPredicatePopupShow={showAddPredicatePopup}
-                            setAddPredicatePopupShow={setShowAddPredicatePopup}
-                            setEditingShacleObj={setEditingShacleObj}
-                            setEditingShacleObjIndex={setEditingShacleObjIndex}
+                    <div className="page-header">
+                        <h2 className="page-title">SHACL Shape Editor</h2>
+                        <button
+                            className="add-shape-btn"
+                            onClick={() => setShowAddShaclShapePopup(!showAddShaclShapePopup)}
                         >
-                        </ShaclComponent>
-                    ))}
+                            Add SHACL Shape
+                        </button>
+                    </div>
+
+                    <div className="file-upload-container">
+                        <h2>Upload a SHACL file to get started</h2>
+                        <div className="file-upload-form">
+                            <div className="file-input-wrapper">
+                                <input
+                                    type="file"
+                                    accept=".ttl"
+                                    onChange={handleFileUpload}
+                                    className="file-input"
+                                />
+                            </div>
+                            <button className="upload-btn">Upload</button>
+                        </div>
+                    </div>
                 </>
 
 
             )}
+
+            {loading && (
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p className="loading-text">Processing SHACL file...</p>
+                </div>
+            )}
+
+            {shaclJson && (
+                <>
+                    <div className="page-header">
+                        <h2 className="page-title">SHACL Shape Editor</h2>
+                        <div className={"action-container-wrapper"}>
+                            <div>
+                                <button
+                                    className="add-shape-btn"
+                                    onClick={() => setShowAddShaclShapePopup(!showAddShaclShapePopup)}
+                                >
+                                    Add SHACL Shape
+                                </button>
+                            </div>
+                            <div className="action-container">
+                                <div className="upload-module">
+                                    <h3>Upload a new TTL file</h3>
+                                    <div className="file-upload-form">
+                                        <div className="file-input-wrapper">
+                                            <input
+                                                type="file"
+                                                accept=".ttl"
+                                                onChange={handleFileUpload}
+                                                className="file-input"
+                                            />
+                                        </div>
+                                        <button className="upload-btn">Upload</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div className="shapes-container">
+                        {shaclJson.shapeConstrains.map((shaclObj, shacleObjIndex) => (
+                            <ShaclComponent
+                                key={shaclObj.shapeName.resource}
+                                shaclObj={shaclObj}
+                                shaclObjIndex={shacleObjIndex}
+                                addPredicatePopupShow={showAddPredicatePopup}
+                                setAddPredicatePopupShow={setShowAddPredicatePopup}
+                                setEditingShacleObj={setEditingShacleObj}
+                                setEditingShacleObjIndex={setEditingShacleObjIndex}
+                            >
+                            </ShaclComponent>
+                        ))}
+                    </div>
+                </>
+            )}
+
             {showAddPredicatePopup && (
                 <AddPredicatePopup
                     setAddPredicatePopupShow={setShowAddPredicatePopup}
@@ -138,13 +193,18 @@ const ShaclPage = () =>
                     editingShacleObjIndex={editingShacleObjIndex}
                     shaclJson={shaclJson}
                     setShaclJson={setShaclJson}
+                    globalNamespaces={globalNamespaces}
+                    namespaceToShapes={namespaceToShapes}
+                    namespaceToPredicates={namespaceToPredicates}
                 />
             )}
+
             {showAddShaclShapePopup && (
                 <AddShapePopup
-                    setShowAddShaclShapePopup={setShowAddShaclShapePopup}
                     shaclJson={shaclJson}
                     setShaclJson={setShaclJson}
+                    setShowAddShaclShapePopup={setShowAddShaclShapePopup}
+                    namespaceToShapes={namespaceToShapes}
                 />
             )}
         </div>

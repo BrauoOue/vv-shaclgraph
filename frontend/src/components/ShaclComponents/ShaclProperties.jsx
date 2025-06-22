@@ -2,7 +2,7 @@ import ShaclRow from "./ShaclRow";
 import ShaclPropertyDetail from "./ShaclPropertyDetail";
 import "./ShaclComponent.css"
 
-const ShaclProperties = ({ properties }) => (
+const ShaclProperties = ({ properties, onPropertyUpdate = null }) => (
     <>
         {properties.map((propertyObj, index) => (
             <div key={index}>
@@ -18,7 +18,11 @@ const ShaclProperties = ({ properties }) => (
                     <ShaclPropertyDetail
                         key={`${key}-${i}`}
                         propertyKey={key}
-                        value={val} />
+                        value={val}
+                        onUpdate={onPropertyUpdate ?
+                            (propKey, newValue) => onPropertyUpdate(index, propKey, newValue) :
+                            null}
+                    />
                 ))}
             </div>
         ))}

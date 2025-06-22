@@ -1,11 +1,35 @@
+import React, {useContext} from "react";
 import ShaclHeader from "./ShaclHeader";
 import ShaclRow from "./ShaclRow";
 import ShaclProperties from "./ShaclProperties";
 import {getType, getNullablePredicates} from "../utils";
-import "./ShaclComponent.css"
+import "./ShaclComponent.css";
+import {Context} from "../../App.jsx";
 
-const ShaclComponent = ({shaclObj, addPredicatePopupShow, setAddPredicatePopupShow, setEditingShacleObj, shaclObjIndex, setEditingShacleObjIndex}) =>
+const ShaclComponent = ({
+                            shaclObj,
+                            addPredicatePopupShow,
+                            setAddPredicatePopupShow,
+                            setEditingShacleObj,
+                            shaclObjIndex,
+                            setEditingShacleObjIndex
+                        }) =>
 {
+    const {shaclJson, setShaclJson, namespaceToPredicates, namespaceToShapes} = useContext(Context);
+
+    const handlePredicateUpdate = (predicate, newValue) =>
+    {
+        const updatedShaclJson = {...shaclJson};
+        updatedShaclJson.shapeConstrains[shaclObjIndex][predicate] = newValue;
+        setShaclJson(updatedShaclJson);
+    };
+
+    const handlePropertyUpdate = (propertyIndex, propertyKey, newValue) =>
+    {
+        const updatedShaclJson = {...shaclJson};
+        updatedShaclJson.shapeConstrains[shaclObjIndex].properties[propertyIndex][propertyKey] = newValue;
+        setShaclJson(updatedShaclJson);
+    };
 
     return (
         <div className="shaclComponent">
@@ -20,7 +44,9 @@ const ShaclComponent = ({shaclObj, addPredicatePopupShow, setAddPredicatePopupSh
                     {
                         return <ShaclProperties
                             key="properties"
-                            properties={predicateValue}/>;
+                            properties={predicateValue}
+                            onPropertyUpdate={handlePropertyUpdate}
+                        />;
                     }
 
                     const type = getType(predicateValue);
@@ -33,18 +59,21 @@ const ShaclComponent = ({shaclObj, addPredicatePopupShow, setAddPredicatePopupSh
                             object={type === "string" ? `'${predicateValue}'` : predicateValue.resource}
                             darkerObjectNs={type === "string"}
                             tooltip={type === "string" ? predicateValue : undefined}
+                            objectValue={predicateValue}
+                            objectType={type}
+                            onObjectUpdate={(newValue) => handlePredicateUpdate(predicate, newValue)}
                         />
                     );
                 })}
             </div>
             <div>
-                <button onClick={()=>
+                <button onClick={() =>
                 {
-                    console.log("Clicked")
                     setAddPredicatePopupShow(!addPredicatePopupShow)
                     setEditingShacleObj(shaclObj)
                     setEditingShacleObjIndex(shaclObjIndex)
-                }}>Add</button>
+                }}>Add
+                </button>
             </div>
         </div>
     );
