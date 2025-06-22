@@ -1,82 +1,259 @@
 .shaclComponent {
+    background-color: #fff8e1; /* Light yellow background */
+    border-radius: 6px;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #ffe082; /* Yellow border */
+    transition: all 0.2s ease;
+    width: 100%;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.shaclComponent:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #ffecb3; /* Slightly darker yellow on hover */
+    transform: translateX(2px);
+}
+
+.shaclHeader {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.shaclHeader > div {
+    text-align: left;
+    overflow-x: auto;
+    white-space: nowrap;
+    border: 1px solid #ffd54f;
+    border-radius: 4px;
+    padding: 0.5rem;
+    background-color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    color: #795548;
+}
+
+.shaclHeader > div:last-child {
+    flex-grow: 1;
+}
+
+.shaclBody {
     display: flex;
     flex-direction: column;
-    margin-bottom: 1rem;
-    background-color: yellow;
-    flex: 0 1 auto;
-    width: 80%;
-    padding: 1rem;
-    font-size: clamp(1rem, 1.2vw, 2rem);
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid #ffc107; /* Yellow accent border */
 }
 
-.shaclHeader
-{
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    /*gap: 3px;*/
-    /*border: 1px solid gray;*/
-}
-
-
-.shaclHeader > div
-{
-    border: 1px solid gray;
-    text-align: center;
-    cursor: pointer;
-}
-
-.shaclHeader > div:last-child
-{
-    grid-column: 2/-1;
-}
-
-.shaclBody
-{
+.shaclRow {
     display: flex;
-    flex-direction: column;
-}
-
-.shaclRow
-{
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    /*gap: 3px;*/
-    /*border: 1px solid gray;*/
-
-}
-
-.shaclRow > div
-{
-    border: 1px solid gray;
-    text-align: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
     cursor: pointer;
-
+    transition: background-color 0.2s ease;
 }
 
-.shaclRow > div:hover
-{
-    background-color: #efef09;
+.shaclRow > div {
+    text-align: left;
+    overflow-x: auto;
+    white-space: nowrap;
+    border: 1px solid #ffe082;
+    border-radius: 4px;
+    padding: 0.5rem;
+    background-color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    color: #795548;
+    width: 120px;
+    min-height: 40px;
+    display: block;
 }
 
-.shaclRow > div:last-child
-{
+.shaclRow:hover {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.shaclRow > div:last-child {
+    flex-grow: 1;
+    max-width: 400px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.indented
-{
+.indented {
     margin-left: 1.3rem;
-
+    padding-left: 0.5rem;
+    border-left: 2px solid #ffd54f; /* Lighter yellow border for nested content */
 }
 
-.indented > div:first-child
-{
-    /*border-left: none;*/
+.darkerBg {
+    background-color: #fff3e0; /* Light accent color for different types */
 }
 
-.darkerBg
-{
-    background-color: #dada13;
+/* Add button styling */
+.shaclComponent > div:last-child {
+    margin-top: 0.8rem;
+    display: flex;
+    justify-content: flex-end;
 }
+
+.shaclComponent > div:last-child button {
+    background-color: #ffb300;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.shaclComponent > div:last-child button:hover {
+    background-color: #ffa000;
+}
+
+/* Property section styling */
+.propertiesSection {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #ffe082;
+}
+
+.propertiesHeader {
+    font-weight: 500;
+    color: #795548;
+    margin-bottom: 0.5rem;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c5c5c5;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Setting the widths to match the ClazzComponent style */
+.propertyNs {
+    width: 100px;
+}
+
+.property {
+    width: 150px;
+}
+
+.objectNs {
+    width: 100px;
+}
+
+.object {
+    width: 150px;
+    flex-grow: 1;
+}
+
+/*!* Popup styling *!*/
+/*.popupOverlay {*/
+/*    position: fixed;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    right: 0;*/
+/*    bottom: 0;*/
+/*    background-color: rgba(0, 0, 0, 0.5);*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    z-index: 1000;*/
+/*}*/
+
+/*.popupContent {*/
+/*    background-color: white;*/
+/*    border-radius: 5px;*/
+/*    width: 500px;*/
+/*    max-width: 90%;*/
+/*    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);*/
+/*    position: relative;*/
+/*}*/
+
+/*.popupHeader {*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*    padding: 15px;*/
+/*    border-bottom: 1px solid #eee;*/
+/*}*/
+
+/*.popupHeader h3 {*/
+/*    margin: 0;*/
+/*    font-size: 1.2rem;*/
+/*}*/
+
+/*.closeButton {*/
+/*    background: none;*/
+/*    border: none;*/
+/*    font-size: 1.5rem;*/
+/*    cursor: pointer;*/
+/*    padding: 0;*/
+/*    line-height: 1;*/
+/*}*/
+
+/*.popupBody {*/
+/*    padding: 15px;*/
+/*}*/
+
+/*.formGroup {*/
+/*    margin-bottom: 15px;*/
+/*}*/
+
+/*.formGroup label {*/
+/*    display: block;*/
+/*    margin-bottom: 5px;*/
+/*    font-weight: 500;*/
+/*}*/
+
+/*.formGroup input {*/
+/*    width: 100%;*/
+/*    padding: 8px;*/
+/*    border: 1px solid #ddd;*/
+/*    border-radius: 4px;*/
+/*    box-sizing: border-box;*/
+/*}*/
+
+/*.popupFooter {*/
+/*    display: flex;*/
+/*    justify-content: flex-end;*/
+/*    gap: 10px;*/
+/*    padding: 15px;*/
+/*    border-top: 1px solid #eee;*/
+/*}*/
+
+/*.popupFooter button {*/
+/*    padding: 8px 16px;*/
+/*    border: none;*/
+/*    border-radius: 4px;*/
+/*    cursor: pointer;*/
+/*}*/
+
+/*.popupFooter button:not(.saveButton) {*/
+/*    background-color: #f1f1f1;*/
+/*}*/
+
+/*.popupFooter .saveButton {*/
+/*    background-color: #ffb300;*/
+/*    color: white;*/
+/*}*/

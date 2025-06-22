@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext} from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -6,12 +6,13 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import { Context } from '../../App.jsx';
-import { updateGlobalNamespaces } from '../../utils/namespaceUtils.js';
+import {Context} from '../../App.jsx';
+import {updateGlobalNamespaces} from '../../utils/namespaceUtils.js';
 
 import DataComponent from '../DataComponent/DataComponent';
 import "./DataPage.css";
 // import { Context } from 'C:/Users/Asus/Desktop/vp-shacl/vv-shaclgraph/frontend/src/App.jsx'; 
+
 
 const DataPage = () => {
   // const { shaclJson } = useContext(Context); 
@@ -173,10 +174,17 @@ function mergeValidationErrors(dataJson, validationErrors) {
         </div>
       )}
 
-      {dataJson && dataToDisplay.length === 0 && (
-        <p>No data found in the uploaded file.</p>
-      )}
-
+            const jsonData = await response.json();
+            setDataJson(jsonData);
+            await updateGlobalNamespaces(jsonData, globalNamespaces, setGlobalNamespaces);
+        } catch (err)
+        {
+            alert('Error uploading file: ' + err.message);
+        } finally
+        {
+            setLoading(false);
+        }
+    };
       <div className="data-list">
         {dataToDisplay.map((subjectData, index) => (
           <DataComponent key={index} subjectData={subjectData} />
@@ -185,7 +193,7 @@ function mergeValidationErrors(dataJson, validationErrors) {
       <button className='myButton' onClick={handleValidate}>Validate</button>
     </div>
 
-  );
+    );
 };
 
 export default DataPage;

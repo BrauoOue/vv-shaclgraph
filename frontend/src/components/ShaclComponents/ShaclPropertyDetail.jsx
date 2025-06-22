@@ -2,10 +2,16 @@ import ShaclRow from "./ShaclRow";
 import { getType } from "../utils";
 import "./ShaclComponent.css"
 
-const ShaclPropertyDetail = ({ propertyKey, value }) => {
+const ShaclPropertyDetail = ({ propertyKey, value, onUpdate = null }) => {
     if (value === null) return null;
 
     const type = getType(value);
+
+    const handleUpdate = (newValue) => {
+        if (onUpdate) {
+            onUpdate(propertyKey, newValue);
+        }
+    };
 
     if (type === "json") {
         return (
@@ -15,6 +21,9 @@ const ShaclPropertyDetail = ({ propertyKey, value }) => {
                 property={propertyKey}
                 objectNs={`${value.nsPrefix}:`}
                 object={value.resource}
+                objectValue={value}
+                objectType={type}
+                onObjectUpdate={onUpdate ? handleUpdate : null}
             />
         );
     }
@@ -27,7 +36,10 @@ const ShaclPropertyDetail = ({ propertyKey, value }) => {
                 property={propertyKey}
                 objectNs="&nbsp;"
                 object={`(${value.join(", ")})`}
+                objectValue={value}
+                objectType={type}
                 darkerObjectNs={true}
+                onObjectUpdate={onUpdate ? handleUpdate : null}
             />
         );
     }
@@ -40,8 +52,11 @@ const ShaclPropertyDetail = ({ propertyKey, value }) => {
                 property={propertyKey}
                 objectNs="&nbsp;"
                 object={type === "string" ? `'${value}'` : value}
+                objectValue={value}
+                objectType={type}
                 tooltip={type === "string" ? value : undefined}
                 darkerObjectNs={true}
+                onObjectUpdate={onUpdate ? handleUpdate : null}
             />
         );
     }

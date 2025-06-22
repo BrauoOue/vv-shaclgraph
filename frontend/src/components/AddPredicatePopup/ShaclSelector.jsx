@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 const ShaclSelector = ({selectedNs,setSelectedNs ,selectedResource,setSelectedResource, namespaceMap}) =>
 {
@@ -25,9 +25,10 @@ const ShaclSelector = ({selectedNs,setSelectedNs ,selectedResource,setSelectedRe
                 }}
             >
                 <option value="">-- Select Resource --</option>
-                {namespaceMap[selectedNs].map(resource => (
+                {selectedNs && namespaceMap[selectedNs] && namespaceMap[selectedNs].map(resource => (
                     <option key={resource} value={resource}>{resource}</option>
                 ))}
+
             </select>
         </>
     );
