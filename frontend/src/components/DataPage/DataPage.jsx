@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext} from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -6,86 +6,96 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import { Context } from '../../App.jsx';
-import { updateGlobalNamespaces } from '../../utils/namespaceUtils.js';
+import {Context} from '../../App.jsx';
+import {updateGlobalNamespaces} from '../../utils/namespaceUtils.js';
 
 import DataComponent from '../DataComponent/DataComponent';
 import "./DataPage.css";
 // import { Context } from 'C:/Users/Asus/Desktop/vp-shacl/vv-shaclgraph/frontend/src/App.jsx'; 
 
-const DataPage = () => {
-  // const { shaclJson } = useContext(Context); 
-  const [dataFile, setDataFile] = useState(null);
-  const [dataJson, setDataJson] = useState(null);
-  const [loading, setLoading] = useState(false);
-  
-  const { globalNamespaces, setGlobalNamespaces } = useContext(Context);
-  // const [validationResult, setValidationResult] = useState(null);
+const DataPage = () =>
+{
+    // const { shaclJson } = useContext(Context);
+    const [dataFile, setDataFile] = useState(null);
+    const [dataJson, setDataJson] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file || !file.name.endsWith('.ttl')) {
-      alert('Please upload a valid .ttl file.');
-      return;
-    }
-    setDataFile(file);
-  };
+    const {globalNamespaces, setGlobalNamespaces} = useContext(Context);
+    // const [validationResult, setValidationResult] = useState(null);
 
-  const uploadFile = async () => {
-    if (!dataFile) return;
-    setLoading(true);
+    const handleFileChange = (e) =>
+    {
+        const file = e.target.files[0];
+        if (!file || !file.name.endsWith('.ttl'))
+        {
+            alert('Please upload a valid .ttl file.');
+            return;
+        }
+        setDataFile(file);
+    };
 
-    const formData = new FormData();
-    formData.append('file', dataFile);
+    const uploadFile = async () =>
+    {
+        if (!dataFile) return;
+        setLoading(true);
 
-    try {
-      const response = await fetch('http://localhost:9090/api/convert/dataTtlToJson', {
-        method: 'POST',
-        body: formData,
-      });
+        const formData = new FormData();
+        formData.append('file', dataFile);
 
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
+        try
+        {
+            const response = await fetch('http://localhost:9090/api/convert/dataTtlToJson', {
+                method: 'POST',
+                body: formData,
+            });
 
-      const jsonData = await response.json();
-      setDataJson(jsonData);
-      await updateGlobalNamespaces(jsonData,globalNamespaces,setGlobalNamespaces);
-    } catch (err) {
-      alert('Error uploading file: ' + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+            if (!response.ok)
+            {
+                throw new Error('Upload failed');
+            }
 
-  const dataToDisplay = dataJson?.data || [];
+            const jsonData = await response.json();
+            setDataJson(jsonData);
+            await updateGlobalNamespaces(jsonData, globalNamespaces, setGlobalNamespaces);
+        } catch (err)
+        {
+            alert('Error uploading file: ' + err.message);
+        } finally
+        {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <div className="data-page">
-      <h1>Data</h1>
+    const dataToDisplay = dataJson?.data || [];
 
-      {!dataJson && (
-        <div className="upload-section">
-          <input type="file" accept=".ttl" onChange={handleFileChange} />
-          <button onClick={uploadFile} disabled={!dataFile || loading}>
-            {loading ? 'Uploading...' : 'Upload & Convert'}
-          </button>
+    return (
+        <div className="data-page">
+            <h1>Data</h1>
+
+            {!dataJson && (
+                <div className="upload-section">
+                    <input type="file" accept=".ttl" onChange={handleFileChange}/>
+                    <button onClick={uploadFile} disabled={!dataFile || loading}>
+                        {loading ? 'Uploading...' : 'Upload & Convert'}
+                    </button>
+                </div>
+            )}
+
+            {dataJson && dataToDisplay.length === 0 && (
+                <p>No data found in the uploaded file.</p>
+            )}
+
+            <div className="data-list">
+                {dataToDisplay.map((subjectData, index) => (
+                    <DataComponent key={index} subjectData={subjectData}/>
+                ))}
+            </div>
+            <button className='myButton'
+
+            >Validate</button>
         </div>
-      )}
 
-      {dataJson && dataToDisplay.length === 0 && (
-        <p>No data found in the uploaded file.</p>
-      )}
-
-      <div className="data-list">
-        {dataToDisplay.map((subjectData, index) => (
-          <DataComponent key={index} subjectData={subjectData} />
-        ))}
-      </div>
-      <button className='myButton'>Validate</button>
-    </div>
-
-  );
+    );
 };
 
 export default DataPage;

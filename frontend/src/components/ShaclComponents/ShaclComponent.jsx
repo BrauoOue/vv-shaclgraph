@@ -15,7 +15,7 @@ const ShaclComponent = ({
                             setEditingShacleObjIndex
                         }) =>
 {
-    const {shaclJson, setShaclJson, namespaceToPredicates, namespaceToShapes} = useContext(Context);
+    const {shaclJson, setShaclJson} = useContext(Context);
 
     const handlePredicateUpdate = (predicate, newValue) =>
     {
@@ -66,13 +66,13 @@ const ShaclComponent = ({
                     );
                 })}
             </div>
-            <div>
+            <div className="action-buttons">
                 <button onClick={() =>
                 {
                     setAddPredicatePopupShow(!addPredicatePopupShow)
                     setEditingShacleObj(shaclObj)
                     setEditingShacleObjIndex(shaclObjIndex)
-                }}>Add
+                }}>Add Predicate
                 </button>
             </div>
         </div>

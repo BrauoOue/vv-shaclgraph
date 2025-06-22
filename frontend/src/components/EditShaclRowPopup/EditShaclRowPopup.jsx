@@ -21,12 +21,6 @@ const EditShaclRowPopup = ({
 
     useEffect(() =>
     {
-        console.log("Namespace to shape in edit shacle popup:", namespaceToShapes)
-    }, []);
-
-
-    useEffect(() =>
-    {
         if (objectType === "string" || objectType === "number")
         {
             setValue(objectValue);
