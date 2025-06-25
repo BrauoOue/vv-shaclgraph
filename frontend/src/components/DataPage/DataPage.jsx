@@ -99,12 +99,27 @@ const DataPage = () => {
     return pos === -1 ? iri : iri.substring(pos + 1);
   }
 
-  function mergeValidationErrors(dataJson, validationErrors) {
-    if (!validationErrors || validationErrors.length === 0)
+  function mergeValidationErrors(dataJson, validationErrors, isValid) {
+    // If validation is explicitly successful or there are no errors, clear all error states
+    if (isValid || !validationErrors || validationErrors.length === 0) {
+      // Reset all error flags in the data
+      const cleanData = dataJson.data.map(subject => ({
+        ...subject,
+        error: false,
+        errorMsg: null,
+        triplets: subject.triplets.map(triplet => ({
+          ...triplet,
+          error: false,
+          errorMsg: null
+        }))
+      }));
+
       return {
         ...dataJson,
         valid: true,
+        data: cleanData
       };
+    }
 
     let hasErrors = false;
 
@@ -177,11 +192,16 @@ const DataPage = () => {
 
       const validationResult = await response.json();
 
+      // Pass the overall validation status to ensure proper clearing of errors
       const enrichedDataJson = mergeValidationErrors(
           dataJson,
-          validationResult.validationErrors
+          validationResult.validationErrors,
+          validationResult.valid
       );
-      console.log(enrichedDataJson);
+
+      console.log("Validation result:", validationResult.valid);
+      console.log("Enriched data:", enrichedDataJson);
+
       setDataJson(enrichedDataJson);
     } catch (error) {
       console.error("Validation error:", error);
@@ -275,4 +295,3 @@ const DataPage = () => {
 };
 
 export default DataPage;
-
