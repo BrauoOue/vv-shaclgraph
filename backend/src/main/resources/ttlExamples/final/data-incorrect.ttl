@@ -1,0 +1,30 @@
+@prefix ex: <http://example.org/ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# === People ===
+ex:alice a ex:Person ;
+    ex:age 29 .
+
+ex:bob a ex:Person ;
+    ex:name "Bob" ;
+    ex:age -5 .
+
+# === Books ===
+ex:book1 a ex:Book ;
+    ex:title "Semantic Web for Beginners" .
+
+
+ex:book2 a ex:Book ;
+    ex:title "Mystery of SHACL" ;
+    ex:author ex:banana .
+
+# === Random Resource (Not in Shape Target, Should Be Ignored) ===
+ex:banana a ex:Fruit ;
+    ex:name "Banana" .
+
+# === Libraries ===
+ex:library1 a ex:Library .
+
+
+ex:library2 a ex:Library ;
+    ex:books ex:book2, ex:banana .

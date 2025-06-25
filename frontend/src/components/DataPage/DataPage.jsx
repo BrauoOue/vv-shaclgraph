@@ -228,14 +228,31 @@ const DataPage = () => {
 
   return (
       <div className="data-page">
-        <h1>Data</h1>
+        <div className="page-header">
+          <h2 className="page-title">Data Editor</h2>
+          {dataJson && (
+            <div className="header-actions">
+              <button className="myButton action-btn" onClick={handleValidate}>
+                Validate
+              </button>
+              <button className="myButton action-btn download-btn" onClick={handleDownload}>
+                Download TTL
+              </button>
+            </div>
+          )}
+        </div>
 
         {!dataJson && (
             <div className="upload-section">
-              <input type="file" accept=".ttl" onChange={handleFileChange} />
-              <button onClick={uploadFile} disabled={!dataFile || loading}>
-                {loading ? "Uploading..." : "Upload & Convert"}
-              </button>
+              <h2>Upload a data file to get started</h2>
+              <div className="file-upload-form">
+                <div className="file-input-wrapper">
+                  <input type="file" accept=".ttl" onChange={handleFileChange} className="file-input" />
+                </div>
+                <button className="upload-btn" onClick={uploadFile} disabled={!dataFile || loading}>
+                  {loading ? "Uploading..." : "Upload & Convert"}
+                </button>
+              </div>
             </div>
         )}
 
@@ -253,12 +270,9 @@ const DataPage = () => {
               />
           ))}
         </div>
-        <button className="myButton" onClick={handleValidate}>
-          Validate
-        </button>
-        <button className='myButton' onClick={handleDownload}>Download .ttl</button>
       </div>
   );
 };
 
 export default DataPage;
+

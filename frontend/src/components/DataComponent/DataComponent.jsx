@@ -13,9 +13,9 @@ const DataComponent = ({ subjectData, subjectIndex, onInputChange }) => {
   };
 
   return (
-    <div className="data-container">
+    <div className="dataComponent">
       <div className="dataHeader">
-        <div className="subjectNs">{localData.subjectNsPrefix}</div>
+        <div className="subjectNs">{localData.subjectNsPrefix}:</div>
         <div className="subject">{localData.subject}</div>
       </div>
       <div className="dataBody">
@@ -24,26 +24,30 @@ const DataComponent = ({ subjectData, subjectIndex, onInputChange }) => {
             key={idx}
             className={`dataRow ${triplet.error ? "error-row" : ""}`}
           >
-            <input
-              className="propertyNs"
-              value={subjectData.triplets[idx].predicateNsPrefix}
-              onChange={(e) => handleChange(e, idx, "predicateNsPrefix")}
-            />
-            <input
-              className="property"
-              value={subjectData.triplets[idx].predicate}
-              onChange={(e) => handleChange(e, idx, "predicate")}
-            />
-            <input
-              className="objectNs"
-              value={subjectData.triplets[idx].objectNsPrefix || ""}
-              onChange={(e) => handleChange(e, idx, "objectNsPrefix")}
-            />
-            <input
-              className="object"
-              value={subjectData.triplets[idx].object}
-              onChange={(e) => handleChange(e, idx, "object")}
-            />
+            <div className="propertyNs">
+              <input
+                value={subjectData.triplets[idx].predicateNsPrefix}
+                onChange={(e) => handleChange(e, idx, "predicateNsPrefix")}
+              />
+            </div>
+            <div className="property">
+              <input
+                value={subjectData.triplets[idx].predicate}
+                onChange={(e) => handleChange(e, idx, "predicate")}
+              />
+            </div>
+            <div className="objectNs">
+              <input
+                value={subjectData.triplets[idx].objectNsPrefix || ""}
+                onChange={(e) => handleChange(e, idx, "objectNsPrefix")}
+              />
+            </div>
+            <div className="object">
+              <input
+                value={subjectData.triplets[idx].object}
+                onChange={(e) => handleChange(e, idx, "object")}
+              />
+            </div>
 
             {triplet.error && <div className="tooltip">{triplet.errorMsg}</div>}
           </div>
