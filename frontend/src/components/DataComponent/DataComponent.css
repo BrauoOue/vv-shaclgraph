@@ -81,4 +81,36 @@
   font-size: 12px;
 }
 
+/* Tooltip container - relative positioning */
+.dataRow.error-row {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Tooltip box - initially hidden */
+.dataRow .tooltip {
+  visibility: hidden;
+  opacity: 0;
+  background-color: #f8d7da;
+  color: #721c24;
+  text-align: left;
+  border-radius: 4px;
+  padding: 0.5rem;
+  position: absolute;
+  top: 100%; /* Show below the row */
+  left: 0;
+  z-index: 10;
+  width: max-content;
+  max-width: 300px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  font-size: 0.9rem;
+  white-space: normal;
+  transition: opacity 0.2s ease;
+}
+
+/* Show tooltip on hover */
+.dataRow.error-row:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
 

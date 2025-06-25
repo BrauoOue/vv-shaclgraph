@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import "./DataComponent.css";
 
-const DataComponent = ({ subjectData }) => {
+const DataComponent = ({ subjectData, subjectIndex, onInputChange }) => {
   const [localData, setLocalData] = useState(subjectData);
 
   useEffect(() => {
@@ -9,9 +9,7 @@ const DataComponent = ({ subjectData }) => {
   }, [subjectData]);
 
   const handleChange = (e, idx, field) => {
-    const newTriplets = [...localData.triplets];
-    newTriplets[idx] = { ...newTriplets[idx], [field]: e.target.value };
-    setLocalData({ ...localData, triplets: newTriplets });
+    onInputChange(subjectIndex, idx, field, e.target.value);
   };
 
   return (
@@ -24,32 +22,30 @@ const DataComponent = ({ subjectData }) => {
         {localData.triplets.map((triplet, idx) => (
           <div
             key={idx}
-            className={`dataRow ${triplet.error ? 'error-row' : ''}`}
+            className={`dataRow ${triplet.error ? "error-row" : ""}`}
           >
             <input
               className="propertyNs"
-              value={triplet.predicateNsPrefix}
-              onChange={(e) => handleChange(e, idx, 'predicateNsPrefix')}
-              data-error={triplet.errorMsg || ''}
+              value={subjectData.triplets[idx].predicateNsPrefix}
+              onChange={(e) => handleChange(e, idx, "predicateNsPrefix")}
             />
             <input
               className="property"
-              value={triplet.predicate}
-              onChange={(e) => handleChange(e, idx, 'predicate')}
-              data-error={triplet.errorMsg || ''}
+              value={subjectData.triplets[idx].predicate}
+              onChange={(e) => handleChange(e, idx, "predicate")}
             />
             <input
               className="objectNs"
-              value={triplet.objectNsPrefix || ''}
-              onChange={(e) => handleChange(e, idx, 'objectNsPrefix')}
-              data-error={triplet.errorMsg || ''}
+              value={subjectData.triplets[idx].objectNsPrefix || ""}
+              onChange={(e) => handleChange(e, idx, "objectNsPrefix")}
             />
             <input
               className="object"
-              value={triplet.object}
-              onChange={(e) => handleChange(e, idx, 'object')}
-              data-error={triplet.errorMsg || ''}
+              value={subjectData.triplets[idx].object}
+              onChange={(e) => handleChange(e, idx, "object")}
             />
+
+            {triplet.error && <div className="tooltip">{triplet.errorMsg}</div>}
           </div>
         ))}
       </div>
