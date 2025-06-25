@@ -76,19 +76,57 @@ const ShaclPage = () =>
                     setNamespaceToShapes,
                     setNamespaceToPredicates
                 );
-            }
-            catch (error)
+            } catch (error)
             {
                 console.error("Upload error:", error);
                 alert("Failed to process the SHACL file.");
-            }
-            finally
+            } finally
             {
                 setLoading(false);
             }
         };
 
         reader.readAsText(file);
+    };
+
+    const handleDownloadShaclTtl = async () =>
+    {
+        try
+        {
+            const response = await axios.post('http://localhost:9090/api/convert/shaclJsonToTtl', shaclJson, {
+                responseType: 'blob',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Create a blob URL and trigger download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+
+            // Get filename from Content-Disposition header if available, otherwise use default
+            const contentDisposition = response.headers['content-disposition'];
+            let filename = 'shacl-export.ttl';
+            if (contentDisposition)
+            {
+                const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (filenameMatch && filenameMatch.length > 1)
+                {
+                    filename = filenameMatch[1];
+                }
+            }
+
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error)
+        {
+            console.error('Error downloading SHACL TTL:', error);
+            alert('Failed to download SHACL TTL file.');
+        }
     };
 
     return (
@@ -139,12 +177,18 @@ const ShaclPage = () =>
                     <div className="page-header">
                         <h2 className="page-title">SHACL Shape Editor</h2>
                         <div className={"action-container-wrapper"}>
-                            <div>
+                            <div className={"buttons-container"}>
                                 <button
                                     className="add-shape-btn"
                                     onClick={() => setShowAddShaclShapePopup(!showAddShaclShapePopup)}
                                 >
                                     Add SHACL Shape
+                                </button>
+                                <button
+                                    className="download-btn"
+                                    onClick={handleDownloadShaclTtl}
+                                >
+                                    Download TTL
                                 </button>
                             </div>
                             <div className="action-container">

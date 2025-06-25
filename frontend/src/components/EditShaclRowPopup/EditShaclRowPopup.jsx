@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useContext} from "react";
-import "./EditShaclRowPopup.css";
 import {Context} from "../../App.jsx";
 import ShaclSelector from "../AddPredicatePopup/ShaclSelector.jsx";
+import "./EditShaclRowPopup.css"
 
 const EditShaclRowPopup = ({
                                isOpen,
@@ -10,7 +10,8 @@ const EditShaclRowPopup = ({
                                property,
                                objectValue,
                                objectType,
-                               onSave
+                               onSave,
+                               onDelete
                            }) =>
 {
 
@@ -43,6 +44,13 @@ const EditShaclRowPopup = ({
             onSave({nsPrefix, resource});
         }
         onClose();
+    };
+
+    const handleDelete = () => {
+        if (onDelete) {
+            onDelete(property);
+            onClose();
+        }
     };
 
     if (!isOpen) return null;
@@ -111,7 +119,8 @@ const EditShaclRowPopup = ({
                     )}
                 </div>
                 <div className="popupFooter">
-                    <button onClick={onClose}>Cancel</button>
+                    <button className="deleteButton" onClick={handleDelete}>Delete</button>
+                    <button className={"cancelButton"} onClick={onClose}>Cancel</button>
                     <button className="saveButton" onClick={handleSave}>Save</button>
                 </div>
             </div>

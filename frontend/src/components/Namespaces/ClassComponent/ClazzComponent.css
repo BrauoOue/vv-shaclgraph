@@ -11,7 +11,7 @@
 .clazzComponent:hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     background-color: #f1f3f5;
-    transform: translateX(2px);
+    /*transform: translateX(2px);*/
 }
 
 .classHeader, .classRow {

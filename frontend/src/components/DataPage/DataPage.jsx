@@ -225,10 +225,18 @@ const handleInputChange = (subjectIndex, tripletIndex, field, value) => {
   }
 };
 
+        try {
+            const response = await fetch("http://localhost:9090/api/validate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestBody)
+            });
 
-  return (
-    <div className="data-page">
-      <h1>Data</h1>
+            if (!response.ok) {
+                throw new Error("Validation failed");
+            }
 
       {!dataJson && (
         <div className="upload-section">

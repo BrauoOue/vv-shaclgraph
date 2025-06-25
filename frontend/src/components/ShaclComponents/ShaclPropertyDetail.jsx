@@ -2,7 +2,7 @@ import ShaclRow from "./ShaclRow";
 import { getType } from "../utils";
 import "./ShaclComponent.css"
 
-const ShaclPropertyDetail = ({ propertyKey, value, onUpdate = null }) => {
+const ShaclPropertyDetail = ({ propertyKey, value, onUpdate = null, onDelete = null }) => {
     if (value === null) return null;
 
     const type = getType(value);
@@ -10,6 +10,12 @@ const ShaclPropertyDetail = ({ propertyKey, value, onUpdate = null }) => {
     const handleUpdate = (newValue) => {
         if (onUpdate) {
             onUpdate(propertyKey, newValue);
+        }
+    };
+
+    const handleDelete = () => {
+        if (onDelete) {
+            onDelete(propertyKey);
         }
     };
 
@@ -24,6 +30,7 @@ const ShaclPropertyDetail = ({ propertyKey, value, onUpdate = null }) => {
                 objectValue={value}
                 objectType={type}
                 onObjectUpdate={onUpdate ? handleUpdate : null}
+                onDelete={onDelete ? handleDelete : null}
             />
         );
     }
@@ -40,6 +47,7 @@ const ShaclPropertyDetail = ({ propertyKey, value, onUpdate = null }) => {
                 objectType={type}
                 darkerObjectNs={true}
                 onObjectUpdate={onUpdate ? handleUpdate : null}
+                onDelete={onDelete ? handleDelete : null}
             />
         );
     }
@@ -57,6 +65,7 @@ const ShaclPropertyDetail = ({ propertyKey, value, onUpdate = null }) => {
                 tooltip={type === "string" ? value : undefined}
                 darkerObjectNs={true}
                 onObjectUpdate={onUpdate ? handleUpdate : null}
+                onDelete={onDelete ? handleDelete : null}
             />
         );
     }
