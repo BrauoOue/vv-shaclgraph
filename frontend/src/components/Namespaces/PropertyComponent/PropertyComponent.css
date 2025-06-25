@@ -11,7 +11,7 @@
 .propertyComponent:hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     background-color: #e8f5e9;
-    transform: translateX(2px);
+    /*transform: translateX(2px);*/
 }
 
 .propertyHeader, .classRow {

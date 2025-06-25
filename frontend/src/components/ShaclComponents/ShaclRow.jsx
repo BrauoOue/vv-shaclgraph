@@ -13,7 +13,8 @@ const ShaclRow = ({
                       className = "",
                       onObjectUpdate = null,
                       objectValue = object,
-                      objectType = "string"
+                      objectType = "string",
+                      onDelete = null
                   }) =>
 {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -34,6 +35,12 @@ const ShaclRow = ({
         if (onObjectUpdate)
         {
             onObjectUpdate(newValue);
+        }
+    };
+
+    const handleDelete = (propertyToDelete) => {
+        if (onDelete) {
+            onDelete(propertyToDelete);
         }
     };
 
@@ -58,6 +65,7 @@ const ShaclRow = ({
                     objectValue={objectValue}
                     objectType={objectType}
                     onSave={handleSave}
+                    onDelete={handleDelete}
                 />
             )}
 
