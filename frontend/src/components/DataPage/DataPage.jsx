@@ -45,11 +45,11 @@ const DataPage = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:9090/api/convert/dataTtlToJson",
-        {
-          method: "POST",
-          body: formData,
-        }
+          "http://localhost:9090/api/convert/dataTtlToJson",
+          {
+            method: "POST",
+            body: formData,
+          }
       );
 
       if (!response.ok) {
@@ -59,9 +59,9 @@ const DataPage = () => {
       const jsonData = await response.json();
       setDataJson(jsonData);
       await updateGlobalNamespaces(
-        jsonData,
-        globalNamespaces,
-        setGlobalNamespaces
+          jsonData,
+          globalNamespaces,
+          setGlobalNamespaces
       );
     } catch (err) {
       alert("Error uploading file: " + err.message);
@@ -70,24 +70,24 @@ const DataPage = () => {
     }
   };
 
-const handleInputChange = (subjectIndex, tripletIndex, field, value) => {
-  const newData = { ...dataJson };
-  const updatedSubjects = [...newData.data];
+  const handleInputChange = (subjectIndex, tripletIndex, field, value) => {
+    const newData = { ...dataJson };
+    const updatedSubjects = [...newData.data];
 
-  const updatedTriplets = [...updatedSubjects[subjectIndex].triplets];
-  updatedTriplets[tripletIndex] = {
-    ...updatedTriplets[tripletIndex],
-    [field]: value,
-    error: false,       // Reset error flag
-    errorMsg: null      // Reset error message
+    const updatedTriplets = [...updatedSubjects[subjectIndex].triplets];
+    updatedTriplets[tripletIndex] = {
+      ...updatedTriplets[tripletIndex],
+      [field]: value,
+      error: false,       // Reset error flag
+      errorMsg: null      // Reset error message
+    };
+
+    updatedSubjects[subjectIndex] = { ...updatedSubjects[subjectIndex], triplets: updatedTriplets };
+
+    newData.data = updatedSubjects;
+
+    setDataJson(newData);
   };
-
-  updatedSubjects[subjectIndex] = { ...updatedSubjects[subjectIndex], triplets: updatedTriplets };
-
-  newData.data = updatedSubjects;
-
-  setDataJson(newData);
-};
 
   const dataToDisplay = dataJson?.data || [];
 
@@ -111,7 +111,7 @@ const handleInputChange = (subjectIndex, tripletIndex, field, value) => {
     const updatedData = dataJson.data.map((subject) => {
       const subjectLocal = subject.subject;
       const subjectErrors = validationErrors.filter(
-        (e) => getLocalName(e.subject) === subjectLocal
+          (e) => getLocalName(e.subject) === subjectLocal
       );
       const hasSubjectError = subjectErrors.length > 0;
 
@@ -120,7 +120,7 @@ const handleInputChange = (subjectIndex, tripletIndex, field, value) => {
       const updatedTriplets = subject.triplets.map((triplet) => {
         const tripletLocal = triplet.predicate;
         const errorObj = subjectErrors.find(
-          (e) => getLocalName(e.property) === tripletLocal
+            (e) => getLocalName(e.property) === tripletLocal
         );
         if (errorObj) {
           return {
@@ -178,8 +178,8 @@ const handleInputChange = (subjectIndex, tripletIndex, field, value) => {
       const validationResult = await response.json();
 
       const enrichedDataJson = mergeValidationErrors(
-        dataJson,
-        validationResult.validationErrors
+          dataJson,
+          validationResult.validationErrors
       );
       console.log(enrichedDataJson);
       setDataJson(enrichedDataJson);
@@ -190,82 +190,74 @@ const handleInputChange = (subjectIndex, tripletIndex, field, value) => {
   };
 
   const handleDownload = async () => {
-  if (!dataJson) {
-    alert("No data to download.");
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:9090/api/convert/dataJsonToTtl?filename=updatedData.ttl", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(dataJson)
-    });
-
-    if (!response.ok) {
-      throw new Error("Download failed");
+    if (!dataJson) {
+      alert("No data to download.");
+      return;
     }
 
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
+    try {
+      const response = await fetch("http://localhost:9090/api/convert/dataJsonToTtl?filename=updatedData.ttl", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dataJson)
+      });
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'updatedData.ttl');
-    document.body.appendChild(link);
-    link.click();
-    link.parentNode.removeChild(link);
-    window.URL.revokeObjectURL(url);
+      if (!response.ok) {
+        throw new Error("Download failed");
+      }
 
-  } catch (error) {
-    console.error("Download error:", error);
-    alert("Failed to download the file.");
-  }
-};
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
 
-        try {
-            const response = await fetch("http://localhost:9090/api/validate", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(requestBody)
-            });
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'updatedData.ttl');
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
 
-            if (!response.ok) {
-                throw new Error("Validation failed");
-            }
+    } catch (error) {
+      console.error("Download error:", error);
+      alert("Failed to download the file.");
+    }
+  };
 
-      {!dataJson && (
-        <div className="upload-section">
-          <input type="file" accept=".ttl" onChange={handleFileChange} />
-          <button onClick={uploadFile} disabled={!dataFile || loading}>
-            {loading ? "Uploading..." : "Upload & Convert"}
-          </button>
+
+  return (
+      <div className="data-page">
+        <h1>Data</h1>
+
+        {!dataJson && (
+            <div className="upload-section">
+              <input type="file" accept=".ttl" onChange={handleFileChange} />
+              <button onClick={uploadFile} disabled={!dataFile || loading}>
+                {loading ? "Uploading..." : "Upload & Convert"}
+              </button>
+            </div>
+        )}
+
+        {dataJson && dataToDisplay.length === 0 && (
+            <p>No data found in the uploaded file.</p>
+        )}
+
+        <div className="data-list">
+          {dataToDisplay.map((subjectData, index) => (
+              <DataComponent
+                  key={index}
+                  subjectData={subjectData}
+                  subjectIndex={index}
+                  onInputChange={handleInputChange}
+              />
+          ))}
         </div>
-      )}
-
-      {dataJson && dataToDisplay.length === 0 && (
-        <p>No data found in the uploaded file.</p>
-      )}
-
-      <div className="data-list">
-        {dataToDisplay.map((subjectData, index) => (
-          <DataComponent
-            key={index}
-            subjectData={subjectData}
-            subjectIndex={index}
-            onInputChange={handleInputChange}
-          />
-        ))}
+        <button className="myButton" onClick={handleValidate}>
+          Validate
+        </button>
+        <button className='myButton' onClick={handleDownload}>Download .ttl</button>
       </div>
-      <button className="myButton" onClick={handleValidate}>
-        Validate
-      </button>
-      <button className='myButton' onClick={handleDownload}>Download .ttl</button>
-    </div>
   );
 };
 
