@@ -2,15 +2,20 @@ import React, { useState, useEffect } from "react";
 import "./DataComponent.css";
 
 const DataComponent = ({ subjectData, subjectIndex, onInputChange }) => {
-  const [localData, setLocalData] = useState(subjectData);
+  const [localData, setLocalData] = useState(subjectData || { triplets: [] });
 
   useEffect(() => {
-    setLocalData(subjectData);
+    setLocalData(subjectData || { triplets: [] });
   }, [subjectData]);
 
   const handleChange = (e, idx, field) => {
     onInputChange(subjectIndex, idx, field, e.target.value);
   };
+
+  // Return early if no data is available
+  if (!localData || !localData.triplets) {
+    return <div className="dataComponent">No data available</div>;
+  }
 
   return (
     <div className="dataComponent">
@@ -26,25 +31,25 @@ const DataComponent = ({ subjectData, subjectIndex, onInputChange }) => {
           >
             <div className="propertyNs">
               <input
-                value={subjectData.triplets[idx].predicateNsPrefix}
+                value={triplet.predicateNsPrefix || ""}
                 onChange={(e) => handleChange(e, idx, "predicateNsPrefix")}
               />
             </div>
             <div className="property">
               <input
-                value={subjectData.triplets[idx].predicate}
+                value={triplet.predicate || ""}
                 onChange={(e) => handleChange(e, idx, "predicate")}
               />
             </div>
             <div className="objectNs">
               <input
-                value={subjectData.triplets[idx].objectNsPrefix || ""}
+                value={triplet.objectNsPrefix || ""}
                 onChange={(e) => handleChange(e, idx, "objectNsPrefix")}
               />
             </div>
             <div className="object">
               <input
-                value={subjectData.triplets[idx].object}
+                value={triplet.object || ""}
                 onChange={(e) => handleChange(e, idx, "object")}
               />
             </div>
