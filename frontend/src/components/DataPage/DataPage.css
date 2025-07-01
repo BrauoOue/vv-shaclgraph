@@ -30,6 +30,32 @@
 .header-actions {
   display: flex;
   gap: 1rem;
+  align-items: center;
+}
+
+/* New header file upload styling */
+.header-file-upload {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-file-input {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.upload-new-btn {
+  background-color: #007afe !important;
+  cursor: pointer;
+}
+
+.upload-new-btn:hover {
+  background-color: #218838;
 }
 
 .action-btn {
@@ -155,4 +181,42 @@
 
 .myButton:active {
   background-color: #00408d; 
+}
+
+/* Success Popup Styling */
+.success-popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+.success-popup-content {
+  display: flex;
+  align-items: center;
+  background-color: #28a645;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.success-icon {
+  font-size: 20px;
+  margin-right: 12px;
+  font-weight: bold;
+}
+
+.success-message {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, -10px); }
+  15% { opacity: 1; transform: translate(-50%, 0); }
+  85% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -10px); }
 }
